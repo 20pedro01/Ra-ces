@@ -49,13 +49,13 @@ export async function GET() {
     <!-- Barra superior tricolor -->
     <path d="M 0 14 Q 0 0 14 0 L 746 0 Q 760 0 760 14 L 760 4 L 0 4 Z" fill="url(#tricolor)"/>
 
-    <!-- Badge Centrado: Validación en campo MVP -->
-    <rect x="290" y="16" width="180" height="24" rx="12" fill="#faf5ee" stroke="#ebd9c8" stroke-width="1"/>
-    <circle cx="304" cy="28" r="4" fill="#15803d"/>
-    <text x="380" y="32" fill="#3e2719" font-size="11" font-weight="700" class="text-font" text-anchor="middle">Validación en campo MVP</text>
+    <!-- Badge Centrado: Validación del MVP -->
+    <rect x="300" y="16" width="160" height="24" rx="12" fill="#faf5ee" stroke="#ebd9c8" stroke-width="1"/>
+    <circle cx="314" cy="28" r="4" fill="#15803d"/>
+    <text x="380" y="32" fill="#3e2719" font-size="11" font-weight="700" class="text-font" text-anchor="middle">Validación del MVP</text>
 
     <!-- Título Principal -->
-    <text x="380" y="66" fill="#3e2719" font-size="22" font-weight="800" class="text-font" text-anchor="middle">Monitor de demanda y métricas</text>
+    <text x="380" y="66" fill="#3e2719" font-size="22" font-weight="800" class="text-font" text-anchor="middle">Visitas y demanda</text>
 
     <!-- Subtítulo -->
     <text x="380" y="86" fill="#6b635b" font-size="12" font-weight="500" class="text-font" text-anchor="middle">
@@ -84,8 +84,7 @@ export async function GET() {
     <text x="185" y="96" fill="#0284c7" font-size="44" font-weight="800" class="text-font" text-anchor="middle">${visitantes}</text>
 
     <!-- Descripción -->
-    <text x="185" y="124" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">Personas que abrieron el enlace</text>
-    <text x="185" y="139" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">(sin necesidad de iniciar sesión)</text>
+    <text x="185" y="130" fill="#6b635b" font-size="12" font-weight="500" class="text-font" text-anchor="middle">Personas que abrieron el enlace.</text>
 
     <!-- Badge footer -->
     <rect x="130" y="156" width="110" height="22" rx="6" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1"/>
@@ -112,8 +111,7 @@ export async function GET() {
     </text>
 
     <!-- Descripción -->
-    <text x="185" y="124" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">Personas que llegaron a la etapa de cobro</text>
-    <text x="185" y="139" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">/ resumen de pago</text>
+    <text x="185" y="130" fill="#6b635b" font-size="12" font-weight="500" class="text-font" text-anchor="middle">Personas que llegaron a la etapa de cobro</text>
 
     <!-- Badge footer -->
     <rect x="130" y="156" width="110" height="22" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>

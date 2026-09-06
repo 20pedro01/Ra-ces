@@ -57,11 +57,11 @@ export default function MetricasPage() {
           {/* Badge de validación */}
           <div className="inline-flex items-center gap-2 bg-[#faf5ee] text-[#3e2719] border border-[#ebd9c8] px-3 py-1 rounded-full text-xs font-bold tracking-wide mb-3">
             <span className="w-2 h-2 rounded-full bg-[#15803d] shadow-[0_0_0_3px_rgba(21,128,61,0.25)] animate-pulse" />
-            <span>Validación en campo MVP</span>
+            <span>Validación del MVP</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#3e2719] tracking-tight leading-tight">
-            Monitor de demanda y métricas
+            Visitas y demanda
           </h1>
 
           <p className="mt-1.5 text-sm sm:text-base text-[#6b635b]">
@@ -106,7 +106,7 @@ export default function MetricasPage() {
                 {data ? data.visitantes.toLocaleString() : "…"}
               </div>
               <p className="text-xs sm:text-sm text-[#6b635b] leading-snug">
-                Personas que abrieron el enlace (sin necesidad de iniciar sesión).
+                Personas que abrieron el enlace.
               </p>
             </div>
 
@@ -138,7 +138,7 @@ export default function MetricasPage() {
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-[#6b635b] leading-snug">
-                Personas que llegaron a la etapa de cobro / resumen de pago.
+                Personas que llegaron a la etapa de cobro
               </p>
             </div>
 
