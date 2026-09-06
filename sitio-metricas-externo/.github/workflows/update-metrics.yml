@@ -1,0 +1,43 @@
+name: Actualizar Métricas Estáticas
+
+on:
+  # Permite ejecutarlo manualmente con un clic en GitHub (Pestaña Actions -> Run workflow)
+  workflow_dispatch:
+  
+  # Ejecución automática cada hora (minuto 0 de cada hora)
+  schedule:
+    - cron: '0 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar-metricas:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generar index.html estático con datos reales
+        run: node build.js
+        env:
+          API_URL: 'https://viva-raices.vercel.app/api/metricas'
+
+      - name: Guardar y publicar cambios si las métricas cambiaron
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "✅ No hay cambios en los números. No se requiere nuevo commit."
+          else
+            git commit -m "chore: actualizar métricas estáticas en index.html [skip ci]"
+            git push
+            echo "🚀 Métricas actualizadas y publicadas en GitHub Pages."
+          fi

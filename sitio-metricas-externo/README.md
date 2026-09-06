@@ -16,13 +16,24 @@ El diseño implementa una estética limpia y moderna basada en los tres colores 
 
 ```text
 sitio-metricas-externo/
-├── index.html       # Estructura semántica, tarjetas y botón de actualizar
-├── style.css        # Hoja de estilos con variables, paleta y diseño responsive
-├── script.js        # Lógica de consumo de API (fetch), animaciones y persistencia
+├── .github/
+│   └── workflows/
+│       └── update-metrics.yml  # GitHub Action para actualizar automáticamente los datos
+├── template.html    # Plantilla HTML con marcas para inyección estática
+├── build.js         # Script en Node.js que consulta la API y compila index.html
+├── index.html       # Archivo HTML 100% estático compilado (ideal para Canva y navegadores)
+├── style.css        # Hoja de estilos con variables, paleta (verde, azul, café) y diseño responsive
+├── script.js        # Lógica opcional para actualizar datos en vivo desde el navegador
 └── README.md        # Esta guía de uso y despliegue
 ```
 
 ---
+
+## ⚡ Compatibilidad con Canva (Sitio 100% Estático)
+Canva bloquea la ejecución de scripts y peticiones externas por seguridad. Con este flujo:
+1. `index.html` ya contiene los números reales impresos directamente en el HTML.
+2. Canva lo muestra sin requerir JavaScript ni peticiones de red en vivo.
+3. GitHub Actions se encarga de consultar la API en sus servidores y mantener `index.html` actualizado.
 
 ## 🚀 Cómo Subirlo a GitHub y Activar GitHub Pages
 
@@ -67,3 +78,12 @@ El panel incluye un campo en la parte inferior para configurar el **Endpoint de 
   https://tu-dominio-raices.com/api/metricas
   ```
 - Al presionar **Guardar URL**, se guardará en el `localStorage` de tu navegador para que siempre consulte tu servidor en producción.
+
+---
+
+## 🤖 Configurar Permisos del GitHub Action (Recomendado)
+Para que el flujo automático pueda guardar los datos en tu repositorio:
+1. En tu repositorio de GitHub (`M-trics`), ve a **Settings** -> **Actions** -> **General**.
+2. Al final, en la sección **Workflow permissions**, selecciona **Read and write permissions**.
+3. Haz clic en **Save**.
+4. ¡Listo! Ahora en la pestaña **Actions** podrás ver el workflow *Actualizar Métricas Estáticas* y ejecutarlo cuando quieras con el botón **Run workflow**, o dejar que corra solo cada hora.
