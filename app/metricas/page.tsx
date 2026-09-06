@@ -114,6 +114,22 @@ export default function MetricasPage() {
   actualizarMetricas();
 </script>`;
 
+  const [copiedIframe, setCopiedIframe] = useState(false);
+
+  const iframeEmbedCode = `<iframe 
+  src="${endpointUrl ? endpointUrl.replace('/api/metricas', '/metricas/embed') : 'https://tu-dominio.com/metricas/embed'}" 
+  width="360" 
+  height="210" 
+  style="border: none; border-radius: 16px; overflow: hidden;"
+  title="Métricas de Validación Viva Raíces">
+</iframe>`;
+
+  const copyIframeToClipboard = () => {
+    navigator.clipboard.writeText(iframeEmbedCode);
+    setCopiedIframe(true);
+    setTimeout(() => setCopiedIframe(false), 2500);
+  };
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(embedCodeSnippet);
     setCopied(true);
@@ -252,6 +268,69 @@ export default function MetricasPage() {
   "ultima_actualizacion": "${data?.ultima_actualizacion ?? new Date().toISOString()}"
 }`}
             </pre>
+          </div>
+        </div>
+
+        {/* Pure HTML Embed (iframe) */}
+        <div className="bg-neutral-900/70 border border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Code2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800/60 text-emerald-400 text-[11px] font-bold uppercase mb-1">
+                  100% HTML Simple (Sin JavaScript)
+                </div>
+                <h2 className="text-xl font-bold text-neutral-100">
+                  {lang === "en" ? "Simple HTML Code (iFrame)" : "Incrustación en HTML Simple (iFrame)"}
+                </h2>
+                <p className="text-xs sm:text-sm text-neutral-400">
+                  {lang === "en" 
+                    ? "Just a single <iframe> tag. No JavaScript required in your other site; works in WordPress, Wix, HTML, Notion, etc." 
+                    : "Una sola etiqueta <iframe>. No requiere JavaScript en tu otro sitio; funciona en cualquier HTML, WordPress, Wix, etc."}
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={copyIframeToClipboard}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-xs sm:text-sm transition-all active:scale-95 shadow"
+            >
+              {copiedIframe ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-white" />
+                  <span>{lang === "en" ? "Copied!" : "¡Copiado!"}</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 text-emerald-200" />
+                  <span>{lang === "en" ? "Copy HTML Code" : "Copiar HTML Simple"}</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="relative">
+            <pre className="p-4 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm font-mono text-emerald-400 overflow-x-auto">
+              {iframeEmbedCode}
+            </pre>
+          </div>
+
+          {/* Vista previa en vivo del widget dentro del dashboard */}
+          <div>
+            <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider block mb-2">
+              {lang === "en" ? "Live preview:" : "Vista previa en vivo:"}
+            </span>
+            <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 flex justify-center sm:justify-start">
+              <iframe
+                src="/metricas/embed"
+                width="360"
+                height="210"
+                style={{ border: "none", borderRadius: "16px", overflow: "hidden" }}
+                title="Vista previa widget métricas"
+              />
+            </div>
           </div>
         </div>
 
