@@ -48,7 +48,7 @@ type Action =
   | { type: 'selectPackage'; packageId: string; transport: boolean }
   | { type: 'setPackageTransport'; transport: boolean }
   | { type: 'clearPackage' }
-  | { type: 'confirm' }
+  | { type: 'confirm'; code?: string }
   | { type: 'reset' }
 
 const initialState: TripState = {
@@ -140,7 +140,7 @@ function reducer(state: TripState, action: Action): TripState {
       return {
         ...state,
         confirmed: true,
-        confirmationCode: `CT-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+        confirmationCode: action.code ?? `CT-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
       }
     case 'reset':
       return initialState

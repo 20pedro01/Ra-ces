@@ -12,6 +12,8 @@ import { useTrip } from '@/lib/trip-store'
 export function BookingFlow() {
   const { state, totals, dispatch } = useTrip()
   const [submitting, setSubmitting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [contact, setContact] = useState({ name: '', email: '', phone: '' })
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
   const empty = state.items.length === 0 && !pkg
 
@@ -35,12 +37,36 @@ export function BookingFlow() {
     )
   }
 
-  const confirm = () => {
+  const confirm = async () => {
     setSubmitting(true)
-    setTimeout(() => {
-      dispatch({ type: 'confirm' })
+    setErrorMsg(null)
+    try {
+      const res = await fetch('/api/reservas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          state,
+          totals,
+          customer: contact,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Ocurrió un error al procesar la reservación')
+      }
+
+      dispatch({ type: 'confirm', code: data.code })
+    } catch (err: unknown) {
+      console.error('Error al confirmar reservación:', err)
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : 'No se pudo completar la reservación. Intenta nuevamente.'
+      )
+    } finally {
       setSubmitting(false)
-    }, 900)
+    }
   }
 
   const extras = state.items.filter((i) => i.pickup)
@@ -162,6 +188,40 @@ export function BookingFlow() {
           )}
         </section>
 
+        <section aria-labelledby="contact-section" className="flex flex-col gap-3 border-t border-border pt-4">
+          <h2 id="contact-section" className="text-sm font-bold text-muted-foreground">
+            Datos de contacto (opcional)
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label htmlFor="customer-name" className="text-xs font-semibold text-muted-foreground">
+                Nombre completo
+              </label>
+              <input
+                id="customer-name"
+                type="text"
+                placeholder="Ej. Sofía Morales"
+                value={contact.name}
+                onChange={(e) => setContact({ ...contact, name: e.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div>
+              <label htmlFor="customer-email" className="text-xs font-semibold text-muted-foreground">
+                Correo electrónico
+              </label>
+              <input
+                id="customer-email"
+                type="email"
+                placeholder="tu@correo.com"
+                value={contact.email}
+                onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+          </div>
+        </section>
+
         <dl className="flex flex-col gap-1.5 border-t border-border pt-4">
           <div className="flex justify-between text-sm">
             <dt className="text-muted-foreground">Precio de experiencias</dt>
@@ -176,6 +236,15 @@ export function BookingFlow() {
             <dd>{formatMXN(totals.total)}</dd>
           </div>
         </dl>
+
+        {errorMsg && (
+          <div
+            role="alert"
+            className="rounded-2xl border border-destructive/40 bg-destructive/10 p-3 text-center text-sm font-semibold text-destructive"
+          >
+            {errorMsg}
+          </div>
+        )}
 
         <button
           type="button"
@@ -194,7 +263,7 @@ export function BookingFlow() {
           )}
         </button>
         <p className="text-center text-xs text-muted-foreground">
-          Reservación simulada. No se realiza ningún cargo ni se contacta a proveedores.
+          Al confirmar, tu reservación quedará registrada en el sistema.
         </p>
       </div>
     </div>

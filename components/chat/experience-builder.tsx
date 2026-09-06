@@ -239,6 +239,9 @@ export function ExperienceBuilder() {
 
               {step === 'lodging' && (
                 <>
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    1. Elige la zona de Yucatán:
+                  </p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {ZONES.map((z) => (
                       <OptionButton
@@ -250,21 +253,41 @@ export function ExperienceBuilder() {
                       />
                     ))}
                   </div>
+
                   <label className="flex flex-col gap-1.5 text-sm font-bold">
-                    Hotel, colonia o pueblo (opcional)
+                    <span className="flex items-center justify-between">
+                      <span>2. Hotel, colonia o pueblo</span>
+                      <span className="text-xs font-normal text-muted-foreground">(opcional)</span>
+                    </span>
                     <input
                       type="text"
                       value={lodging}
                       onChange={(e) => setLodging(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const finalZone = zone || 'merida'
+                          setZone(finalZone)
+                          dispatch({ type: 'setLodging', zone: finalZone, lodging: lodging.trim() })
+                          next()
+                        }
+                      }}
                       placeholder="Ej. Hotel en el Centro de Mérida"
                       className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40"
                     />
                   </label>
+
+                  {!zone && !lodging.trim() && (
+                    <p className="text-xs text-muted-foreground">
+                      💡 Elige una zona arriba para recomendarte experiencias cercanas (si no estás seguro, puedes elegir Mérida).
+                    </p>
+                  )}
+
                   <NextButton
-                    disabled={!zone}
+                    disabled={!zone && !lodging.trim()}
                     onClick={() => {
-                      if (!zone) return
-                      dispatch({ type: 'setLodging', zone, lodging: lodging.trim() })
+                      const finalZone = zone || 'merida'
+                      setZone(finalZone)
+                      dispatch({ type: 'setLodging', zone: finalZone, lodging: lodging.trim() })
                       next()
                     }}
                   />
