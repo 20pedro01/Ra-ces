@@ -1,80 +1,111 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 370" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 460" width="100%" height="100%">
   <defs>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap');
       .text-font { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     </style>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e293b"/>
+    <linearGradient id="tricolor" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6c4629"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#15803d"/>
     </linearGradient>
-    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="125%">
-      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000" flood-opacity="0.25"/>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#3e2719" flood-opacity="0.06"/>
     </filter>
   </defs>
 
-  <!-- Fondo Principal con bordes redondeados -->
-  <rect width="800" height="370" rx="28" fill="url(#bgGrad)"/>
+  <!-- Fondo General (Cálido y Elegante #fbf9f6) -->
+  <rect width="820" height="460" rx="24" fill="#fbf9f6" stroke="#e6e0d8" stroke-width="1.5"/>
 
-  <!-- Encabezado Superior (Centrado) -->
-  <g transform="translate(400, 32)" text-anchor="middle">
-    <!-- Badge Validación -->
-    <rect x="-90" y="0" width="180" height="24" rx="12" fill="#334155"/>
-    <circle cx="-68" cy="12" r="4" fill="#4ade80"/>
-    <text x="6" y="16" fill="#cbd5e1" font-size="11" font-weight="700" class="text-font">Validación en campo MVP</text>
-
-    <!-- Título Centrado -->
-    <text x="0" y="50" fill="#f8fafc" font-size="22" font-weight="800" class="text-font">Monitor de demanda y métricas · Raíces</text>
+  <!-- Encabezado Blanco con Acento Tricolor -->
+  <g transform="translate(30, 24)" filter="url(#softShadow)">
+    <rect width="760" height="132" rx="18" fill="#ffffff" stroke="#e6e0d8" stroke-width="1"/>
     
-    <!-- Subtítulo Centrado -->
-    <text x="0" y="70" fill="#94a3b8" font-size="12" font-weight="500" class="text-font">Seguimiento en tiempo real de visitantes e intención de compra</text>
-  </g>
+    <!-- Barra superior tricolor -->
+    <path d="M 0 14 Q 0 0 14 0 L 746 0 Q 760 0 760 14 L 760 4 L 0 4 Z" fill="url(#tricolor)"/>
 
-  <!-- Tarjeta 1: Total Visitantes (Azul Cenote) Centrada -->
-  <g transform="translate(45, 122)" filter="url(#cardShadow)">
-    <rect width="340" height="175" rx="20" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
-    <!-- Acento superior azul -->
-    <path d="M 0 20 Q 0 0 20 0 L 320 0 Q 340 0 340 20 L 340 5 L 0 5 Z" fill="#0284c7"/>
-    
-    <!-- Textos Centrados -->
-    <text x="170" y="42" fill="#94a3b8" font-size="13" font-weight="700" class="text-font" text-anchor="middle">Total de visitantes</text>
-    <text x="170" y="96" fill="#38bdf8" font-size="46" font-weight="800" class="text-font" text-anchor="middle">21</text>
-    <text x="170" y="124" fill="#cbd5e1" font-size="11.5" font-weight="500" class="text-font" text-anchor="middle">Personas que abrieron el enlace</text>
+    <!-- Badge Centrado: Validación en campo MVP -->
+    <rect x="290" y="16" width="180" height="24" rx="12" fill="#faf5ee" stroke="#ebd9c8" stroke-width="1"/>
+    <circle cx="304" cy="28" r="4" fill="#15803d"/>
+    <text x="380" y="32" fill="#3e2719" font-size="11" font-weight="700" class="text-font" text-anchor="middle">Validación en campo MVP</text>
 
-    <!-- Badge footer Centrado -->
-    <rect x="115" y="138" width="110" height="22" rx="11" fill="#0284c7" fill-opacity="0.2"/>
-    <text x="170" y="153" fill="#38bdf8" font-size="11" font-weight="600" class="text-font" text-anchor="middle">Tráfico directo</text>
-  </g>
+    <!-- Título Principal -->
+    <text x="380" y="66" fill="#3e2719" font-size="22" font-weight="800" class="text-font" text-anchor="middle">Monitor de demanda y métricas</text>
 
-  <!-- Tarjeta 2: Intención de Compra (Verde Selva) con Número y Porcentaje Centrada -->
-  <g transform="translate(415, 122)" filter="url(#cardShadow)">
-    <rect width="340" height="175" rx="20" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
-    <!-- Acento superior verde -->
-    <path d="M 0 20 Q 0 0 20 0 L 320 0 Q 340 0 340 20 L 340 5 L 0 5 Z" fill="#15803d"/>
-
-    <!-- Textos Centrados -->
-    <text x="170" y="42" fill="#94a3b8" font-size="13" font-weight="700" class="text-font" text-anchor="middle">Intención de compra</text>
-    
-    <!-- Valor con Número y Porcentaje -->
-    <text x="170" y="96" class="text-font" text-anchor="middle">
-      <tspan fill="#4ade80" font-size="46" font-weight="800">8</tspan>
-      <tspan fill="#86efac" font-size="24" font-weight="700" dx="8">(38.1%)</tspan>
+    <!-- Subtítulo -->
+    <text x="380" y="86" fill="#6b635b" font-size="12" font-weight="500" class="text-font" text-anchor="middle">
+      Seguimiento en tiempo real de visitantes e intención de compra de <tspan font-weight="700" fill="#3e2719">Raíces</tspan>.
     </text>
 
-    <text x="170" y="124" fill="#cbd5e1" font-size="11.5" font-weight="500" class="text-font" text-anchor="middle">Llegaron a la etapa de pago</text>
+    <!-- Barra de Estado: En línea · Datos al día -->
+    <rect x="305" y="99" width="150" height="22" rx="11" fill="#faf5ee" stroke="#ebd9c8" stroke-width="1"/>
+    <circle cx="320" cy="110" r="3.5" fill="#15803d"/>
+    <text x="380" y="114" fill="#6b635b" font-size="10.5" font-weight="600" class="text-font" text-anchor="middle">En línea · Datos al día</text>
+  </g>
 
-    <!-- Badge footer Centrado -->
-    <rect x="115" y="138" width="110" height="22" rx="11" fill="#15803d" fill-opacity="0.25"/>
-    <text x="170" y="153" fill="#4ade80" font-size="11" font-weight="600" class="text-font" text-anchor="middle">Demanda real</text>
+  <!-- Tarjeta 1: Total de visitantes (Azul Cenote) -->
+  <g transform="translate(30, 174)" filter="url(#softShadow)">
+    <rect width="370" height="195" rx="18" fill="#ffffff" stroke="#bae6fd" stroke-width="1.2"/>
+    <path d="M 0 14 Q 0 0 14 0 L 356 0 Q 370 0 370 14 L 370 4 L 0 4 Z" fill="#0284c7"/>
+
+    <!-- Encabezado de la tarjeta -->
+    <text x="170" y="35" fill="#6b635b" font-size="13" font-weight="700" class="text-font" text-anchor="middle">Total de visitantes</text>
+    <rect x="242" y="18" width="30" height="30" rx="8" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1"/>
+    <!-- Icono Personas -->
+    <circle cx="257" cy="30" r="4" fill="#0284c7"/>
+    <path d="M250 42 C250 37 253 36 257 36 C261 36 264 37 264 42" stroke="#0284c7" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+    <!-- Valor principal -->
+    <text x="185" y="96" fill="#0284c7" font-size="44" font-weight="800" class="text-font" text-anchor="middle">30</text>
+
+    <!-- Descripción -->
+    <text x="185" y="124" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">Personas que abrieron el enlace</text>
+    <text x="185" y="139" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">(sin necesidad de iniciar sesión)</text>
+
+    <!-- Badge footer -->
+    <rect x="130" y="156" width="110" height="22" rx="6" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1"/>
+    <text x="185" y="171" fill="#0284c7" font-size="11" font-weight="600" class="text-font" text-anchor="middle">Tráfico directo</text>
+  </g>
+
+  <!-- Tarjeta 2: Intención de compra (Verde Selva) -->
+  <g transform="translate(420, 174)" filter="url(#softShadow)">
+    <rect width="370" height="195" rx="18" fill="#ffffff" stroke="#bbf7d0" stroke-width="1.2"/>
+    <path d="M 0 14 Q 0 0 14 0 L 356 0 Q 370 0 370 14 L 370 4 L 0 4 Z" fill="#15803d"/>
+
+    <!-- Encabezado de la tarjeta -->
+    <text x="170" y="35" fill="#6b635b" font-size="13" font-weight="700" class="text-font" text-anchor="middle">Intención de compra</text>
+    <rect x="245" y="18" width="30" height="30" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+    <!-- Icono Carrito -->
+    <circle cx="256" cy="42" r="1.8" fill="#15803d"/>
+    <circle cx="264" cy="42" r="1.8" fill="#15803d"/>
+    <path d="M250 28 L253 28 L256 38 L265 38 L268 31 L254 31" stroke="#15803d" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Valor principal con número y porcentaje -->
+    <text x="185" y="96" class="text-font" text-anchor="middle">
+      <tspan fill="#15803d" font-size="44" font-weight="800">12</tspan>
+      <tspan fill="#15803d" font-size="22" font-weight="700" dx="6">(40.0%)</tspan>
+    </text>
+
+    <!-- Descripción -->
+    <text x="185" y="124" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">Personas que llegaron a la etapa de cobro</text>
+    <text x="185" y="139" fill="#6b635b" font-size="11" font-weight="500" class="text-font" text-anchor="middle">/ resumen de pago</text>
+
+    <!-- Badge footer -->
+    <rect x="130" y="156" width="110" height="22" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+    <text x="185" y="171" fill="#15803d" font-size="11" font-weight="600" class="text-font" text-anchor="middle">Demanda real</text>
   </g>
 
   <!-- Fuente de Datos y Última Sincronización (Centrado al fondo) -->
-  <g transform="translate(400, 328)" text-anchor="middle">
-    <rect x="-180" y="-12" width="360" height="34" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-    <circle cx="-148" cy="5" r="4" fill="#6c4629"/>
-    <text x="10" y="9" fill="#94a3b8" font-size="11.5" font-weight="600" class="text-font">
-      Fuente: API endpoint · Sincronizado en tiempo real
-    </text>
+  <g transform="translate(190, 388)" filter="url(#softShadow)">
+    <rect width="440" height="50" rx="14" fill="#ffffff" stroke="#e6e0d8" stroke-width="1"/>
+    
+    <!-- Icono Globo / API -->
+    <circle cx="22" cy="25" r="9" fill="#faf5ee" stroke="#ebd9c8" stroke-width="1"/>
+    <circle cx="22" cy="25" r="4.5" fill="none" stroke="#6c4629" stroke-width="1.2"/>
+    <line x1="13" y1="25" x2="31" y2="25" stroke="#6c4629" stroke-width="1.2"/>
+    
+    <text x="40" y="22" fill="#3e2719" font-size="12" font-weight="700" class="text-font">Fuente de datos (API endpoint)</text>
+    <text x="40" y="38" fill="#6b635b" font-size="10.5" font-weight="500" class="text-font">Sincronizado en tiempo real</text>
   </g>
 
 </svg>
