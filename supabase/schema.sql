@@ -116,3 +116,38 @@ CREATE POLICY "Permitir lectura de metricas_mvp"
   TO anon, authenticated
   USING (true);
 
+-- ==============================================================================
+-- 7. Tabla de Reseñas y Testimonios (Experiencias, Talleres y Paquetes)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.resenas (
+  id VARCHAR(50) PRIMARY KEY,
+  target_id TEXT NOT NULL,       -- id de la experiencia o paquete
+  target_type TEXT NOT NULL,     -- 'experience' | 'package'
+  author_name TEXT NOT NULL,
+  author_origin TEXT DEFAULT 'Viajero',
+  rating NUMERIC(2, 1) NOT NULL DEFAULT 5.0,
+  comment TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  verified BOOLEAN NOT NULL DEFAULT true
+);
+
+CREATE INDEX IF NOT EXISTS idx_resenas_target_id ON public.resenas (target_id);
+CREATE INDEX IF NOT EXISTS idx_resenas_created_at ON public.resenas (created_at DESC);
+
+ALTER TABLE public.resenas ENABLE ROW LEVEL SECURITY;
+
+-- Permitir a cualquier visitante publicar una reseña
+CREATE POLICY "Permitir inserción pública de reseñas"
+  ON public.resenas
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+-- Permitir leer reseñas públicamente
+CREATE POLICY "Permitir lectura pública de reseñas"
+  ON public.resenas
+  FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+

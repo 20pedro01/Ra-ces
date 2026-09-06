@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Backpack, Check, Clock, MapPin } from 'lucide-react'
 import { PackageBooking } from '@/components/packages/package-booking'
+import { ReviewsSection } from '@/components/reviews/reviews-section'
 import type { TourPackage } from '@/lib/data'
 import { useLanguage } from '@/lib/i18n/context'
 import { getLocalizedPackage } from '@/lib/i18n/data-translations'
@@ -88,6 +89,12 @@ export function PackageDetailContent({ pkg }: { pkg: TourPackage }) {
               </ul>
             </section>
           </div>
+
+          <ReviewsSection
+            targetId={pkg.id}
+            targetType="package"
+            targetTitle={locPkg.name}
+          />
         </article>
 
         <aside className="lg:sticky lg:top-24 lg:mt-8 lg:self-start">

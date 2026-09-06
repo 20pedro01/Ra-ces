@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Clock, Hand, MapPin, Users } from 'lucide-react'
 import { CategoryBadge } from '@/components/category-badge'
 import { ExperienceActions } from '@/components/experiences/experience-actions'
 import { WorkshopFinish } from '@/components/experiences/workshop-finish'
+import { ReviewsSection } from '@/components/reviews/reviews-section'
 import type { Experience } from '@/lib/data'
 import { formatDuration, formatMXN } from '@/lib/format'
 import { useLanguage } from '@/lib/i18n/context'
@@ -87,6 +88,12 @@ export function ExperienceDetailContent({ exp }: { exp: Experience }) {
           </section>
 
           {exp.isWorkshop && <WorkshopFinish experienceId={exp.id} />}
+
+          <ReviewsSection
+            targetId={exp.id}
+            targetType="experience"
+            targetTitle={locExp.name}
+          />
         </article>
 
         <aside className="lg:sticky lg:top-24 lg:mt-8 lg:self-start">
