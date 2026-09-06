@@ -56,7 +56,7 @@
     <path d="M250 42 C250 37 253 36 257 36 C261 36 264 37 264 42" stroke="#0284c7" stroke-width="1.8" fill="none" stroke-linecap="round"/>
 
     <!-- Valor principal -->
-    <text x="185" y="96" fill="#0284c7" font-size="44" font-weight="800" class="text-font" text-anchor="middle">46</text>
+    <text x="185" y="96" fill="#0284c7" font-size="44" font-weight="800" class="text-font" text-anchor="middle">{{VISITANTES}}</text>
 
     <!-- Descripción -->
     <text x="185" y="130" fill="#6b635b" font-size="12" font-weight="500" class="text-font" text-anchor="middle">Personas que abrieron el enlace.</text>
@@ -81,8 +81,8 @@
 
     <!-- Valor principal con número y porcentaje -->
     <text x="185" y="96" class="text-font" text-anchor="middle">
-      <tspan fill="#15803d" font-size="44" font-weight="800">19</tspan>
-      <tspan fill="#15803d" font-size="22" font-weight="700" dx="6">(41.3%)</tspan>
+      <tspan fill="#15803d" font-size="44" font-weight="800">{{INTENCION_COMPRA}}</tspan>
+      <tspan fill="#15803d" font-size="22" font-weight="700" dx="6">({{CONVERSION}})</tspan>
     </text>
 
     <!-- Descripción -->
@@ -103,7 +103,7 @@
     <line x1="13" y1="25" x2="31" y2="25" stroke="#6c4629" stroke-width="1.2"/>
     
     <text x="40" y="22" fill="#3e2719" font-size="12" font-weight="700" class="text-font">Fuente de datos (API endpoint)</text>
-    <text x="40" y="38" fill="#6b635b" font-size="10.5" font-weight="500" class="text-font">Sincronizado: 06/09/2026, 09:12 a.m. (Hora Mérida)</text>
+    <text x="40" y="38" fill="#6b635b" font-size="10.5" font-weight="500" class="text-font">Sincronizado: {{FECHA_ACTUALIZACION}}</text>
   </g>
 
 </svg>
