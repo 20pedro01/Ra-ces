@@ -8,8 +8,11 @@ export interface MetricsData {
   ultima_actualizacion: string
 }
 
-// Archivo local para persistencia inmediata (resiliente si Supabase aún no está configurado)
-const DATA_FILE = path.join(process.cwd(), '.metrics-store.json')
+// Archivo local para persistencia inmediata (usando /tmp en Vercel o entorno serverless)
+const DATA_FILE = path.join(
+  process.env.VERCEL || process.env.NODE_ENV === 'production' ? '/tmp' : process.cwd(),
+  '.metrics-store.json'
+)
 
 function readLocalMetrics(): MetricsData {
   try {
@@ -36,7 +39,7 @@ function writeLocalMetrics(data: MetricsData) {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8')
   } catch (err) {
-    console.error('Error al guardar .metrics-store.json:', err)
+    console.warn('Advertencia al guardar .metrics-store.json:', err)
   }
 }
 
@@ -49,8 +52,16 @@ export async function getMetrics(): Promise<MetricsData & { tasa_conversion: str
         supabase.from('metricas_mvp').select('*', { count: 'exact', head: true }).eq('tipo', 'intencion_compra'),
       ])
 
-      const visitantesSupabase = visitasRes.count ?? 0
-      const comprasSupabase = comprasRes.count ?? 0
+      let visitantesSupabase = visitasRes.count ?? 0
+      let comprasSupabase = comprasRes.count ?? 0
+
+      // Si la tabla metricas_mvp no existe aún o no tiene compras, consultar tabla reservaciones como respaldo
+      if (comprasRes.error) {
+        const reservasRes = await supabase.from('reservaciones').select('*', { count: 'exact', head: true })
+        if (!reservasRes.error && reservasRes.count !== null) {
+          comprasSupabase = reservasRes.count
+        }
+      }
 
       // Combinar con base local si existe
       const local = readLocalMetrics()

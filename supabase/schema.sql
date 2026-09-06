@@ -87,3 +87,32 @@ CREATE POLICY "Permitir inserción pública en lista_espera"
   TO anon, authenticated
   WITH CHECK (true);
 
+-- ==============================================================================
+-- 6. Tabla de Métricas MVP (Visitantes e Intención de Compra)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.metricas_mvp (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  tipo TEXT NOT NULL, -- 'visita' | 'intencion_compra'
+  metadata JSONB
+);
+
+CREATE INDEX IF NOT EXISTS idx_metricas_tipo ON public.metricas_mvp (tipo);
+CREATE INDEX IF NOT EXISTS idx_metricas_created_at ON public.metricas_mvp (created_at DESC);
+
+ALTER TABLE public.metricas_mvp ENABLE ROW LEVEL SECURITY;
+
+-- Permitir a los visitantes (anon) registrar eventos de métricas
+CREATE POLICY "Permitir inserción pública en metricas_mvp"
+  ON public.metricas_mvp
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+-- Permitir consultar las métricas públicamente
+CREATE POLICY "Permitir lectura de metricas_mvp"
+  ON public.metricas_mvp
+  FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
