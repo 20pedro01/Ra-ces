@@ -623,7 +623,7 @@ export function BookingFlow() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">{language === 'en' ? 'Beneficiary' : 'Beneficiario'}:</span>
-                <span className="font-semibold">Viva Raíces · Turismo Comunitario</span>
+                <span className="font-semibold">Raíces · Turismo Comunitario</span>
               </div>
             </div>
           )}

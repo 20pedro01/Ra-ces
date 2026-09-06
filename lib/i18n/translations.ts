@@ -155,7 +155,7 @@ export const TRANSLATIONS = {
     'pay.guarantee': 'Transacción protegida por validación comunitaria',
     'pay.validationModalTitle': 'Validación Comunitaria en Curso',
     'pay.validationModalNoCharge': '¡No se ha realizado ningún cobro a tu tarjeta!',
-    'pay.validationModalDesc': 'Viva Raíces está en etapa de validación de campo directamente con las cooperativas y artesanos mayas de Yucatán para garantizar un modelo justo y sin comisiones abusivas. Por el momento no se realizan cobros en línea.',
+    'pay.validationModalDesc': 'Raíces está en etapa de validación de campo directamente con las cooperativas y artesanos mayas de Yucatán para garantizar un modelo justo y sin comisiones abusivas. Por el momento no se realizan cobros en línea.',
     'pay.validationModalIntentSaved': 'Hemos registrado tu intención de compra y reservación con prioridad. Te enviaremos los detalles y confirmación a tu correo.',
     'pay.validationModalGotIt': 'Entendido, ver confirmación',
 
@@ -225,7 +225,7 @@ export const TRANSLATIONS = {
     'nav.language': 'Language',
 
     // Home
-    'home.tagline': 'Viva Raíces',
+    'home.tagline': 'Raíces',
     'home.title': 'Raíces',
     'home.subtitle': 'Experience Yucatán, don’t just visit it.',
     'home.hero.start': 'Start Planning',
@@ -370,7 +370,7 @@ export const TRANSLATIONS = {
     'pay.guarantee': 'Transaction protected by community validation',
     'pay.validationModalTitle': 'Community Field Validation in Progress',
     'pay.validationModalNoCharge': 'No charges have been made to your card!',
-    'pay.validationModalDesc': 'Viva Raíces is currently conducting field validation, partnering directly with Mayan artisan families and community cooperatives. To ensure a fair and ethical trade model without excessive intermediaries, official online payments will launch very soon.',
+    'pay.validationModalDesc': 'Raíces is currently conducting field validation, partnering directly with Mayan artisan families and community cooperatives. To ensure a fair and ethical trade model without excessive intermediaries, official online payments will launch very soon.',
     'pay.validationModalIntentSaved': 'We have successfully saved your purchase intent and confirmed priority placement. We will email you all trip details and arrival instructions.',
     'pay.validationModalGotIt': 'Understood, view my confirmation',
 

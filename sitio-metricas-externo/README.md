@@ -62,8 +62,8 @@ git push -u origin main
 
 El panel incluye un campo en la parte inferior para configurar el **Endpoint de la API**.
 - Por defecto intentará conectar con `http://localhost:3000/api/metricas` si estás probando en tu máquina local.
-- Cuando tu sitio de Viva Raíces esté desplegado en producción (ej. Vercel o dominio propio), simplemente ingresa tu URL completa:
+- Cuando tu sitio de Raíces esté desplegado en producción (ej. Vercel o dominio propio), simplemente ingresa tu URL completa:
   ```text
-  https://tu-dominio-viva-raices.com/api/metricas
+  https://tu-dominio-raices.com/api/metricas
   ```
 - Al presionar **Guardar URL**, se guardará en el `localStorage` de tu navegador para que siempre consulte tu servidor en producción.

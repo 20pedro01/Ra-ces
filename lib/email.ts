@@ -1,5 +1,5 @@
 /**
- * Servicio de envío de correos electrónicos para Viva Raíces
+ * Servicio de envío de correos electrónicos para Raíces
  * Soporta Resend REST API (sin dependencias adicionales) con simulación transparente si no hay API key.
  */
 
@@ -17,7 +17,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailParams): P
   error?: string
 }> {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.EMAIL_FROM || 'Viva Raíces <reservas@raicesyucatan.com>'
+  const from = process.env.EMAIL_FROM || 'Raíces <reservas@raicesyucatan.com>'
 
   if (!apiKey) {
     console.log(

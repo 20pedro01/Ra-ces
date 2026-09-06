@@ -1,6 +1,6 @@
 /**
  * Panel de Métricas MVP · Validación en Campo
- * Script para conectar con la API de Viva Raíces y mostrar métricas en tiempo real.
+ * Script para conectar con la API de Raíces y mostrar métricas en tiempo real.
  */
 
 // Elementos del DOM

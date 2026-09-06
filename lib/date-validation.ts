@@ -1,5 +1,5 @@
 /**
- * Utilidades y reglas de validación de fechas para Viva Raíces
+ * Utilidades y reglas de validación de fechas para Raíces
  */
 
 export const MAX_BOOKING_MONTHS_AHEAD = 6

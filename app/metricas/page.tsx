@@ -56,7 +56,7 @@ export default function MetricasPage() {
     }
   }, []);
 
-  const embedCodeSnippet = `<!-- Widget Métricas Raíces Viva -->
+  const embedCodeSnippet = `<!-- Widget Métricas Raíces -->
 <div id="raices-metricas-widget" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 440px; padding: 24px; border-radius: 16px; background: #0f172a; color: #f8fafc; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;">Métricas MVP Raíces</h3>
@@ -121,7 +121,7 @@ export default function MetricasPage() {
   width="360" 
   height="210" 
   style="border: none; border-radius: 16px; overflow: hidden;"
-  title="Métricas de Validación Viva Raíces">
+  title="Métricas de Validación Raíces">
 </iframe>`;
 
   const copyIframeToClipboard = () => {
