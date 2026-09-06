@@ -56,11 +56,12 @@ export async function getMetrics(): Promise<MetricsData & { tasa_conversion: str
       let visitantesSupabase = 0
       let comprasSupabase = 0
 
-      if (!visitasRes.error && !comprasRes.error) {
-        visitantesSupabase = visitasRes.count ?? 0
-        comprasSupabase = comprasRes.count ?? 0
+      // Si metricas_mvp existe y devuelve un conteo numérico válido
+      if (typeof visitasRes.count === 'number' && typeof comprasRes.count === 'number') {
+        visitantesSupabase = visitasRes.count
+        comprasSupabase = comprasRes.count
       } else {
-        // Respaldo transparente: si metricas_mvp no existe en Supabase, leer desde reservaciones
+        // Respaldo transparente: si metricas_mvp no existe en Supabase (count es null), leer desde reservaciones
         const [visitasBackup, comprasBackup] = await Promise.all([
           supabase.from('reservaciones').select('*', { count: 'exact', head: true }).eq('status', 'visita'),
           supabase.from('reservaciones').select('*', { count: 'exact', head: true }).in('status', ['intencion_compra', 'confirmada']),
