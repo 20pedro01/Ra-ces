@@ -12,10 +12,10 @@
 </head>
 <body>
 
-  <!-- Contenedor Principal -->
+  <!-- Contenedor Principal Centrado -->
   <main class="dashboard-container">
 
-    <!-- Encabezado -->
+    <!-- Encabezado Centrado -->
     <header class="dashboard-header">
       <div class="brand-badge">
         <span class="dot-live"></span>
@@ -42,7 +42,7 @@
       </div>
     </header>
 
-    <!-- Cuadrícula de Métricas Clave (Verde, Azul y Café) -->
+    <!-- Cuadrícula de Métricas Clave (Centradas) -->
     <section class="metrics-grid">
       
       <!-- Tarjeta 1: Visitantes (Color Azul Cenote) -->
@@ -67,7 +67,7 @@
         </div>
       </article>
 
-      <!-- Tarjeta 2: Intención de Compra (Color Verde Selva) -->
+      <!-- Tarjeta 2: Intención de Compra (Color Verde Selva) con Número y Porcentaje -->
       <article class="metric-card card-green">
         <div class="card-header">
           <span class="card-label">Intención de compra</span>
@@ -80,7 +80,10 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="metric-value" id="val-compras">{{INTENCION_COMPRA}}</div>
+          <div class="metric-value">
+            <span id="val-compras">{{INTENCION_COMPRA}}</span>
+            <span class="metric-percentage" id="val-conversion">({{CONVERSION}})</span>
+          </div>
           <p class="metric-desc">Personas que llegaron a la etapa de cobro / resumen de pago.</p>
         </div>
         <div class="card-footer">
@@ -90,40 +93,18 @@
 
     </section>
 
-    <!-- Panel de Configuración de API y Detalles -->
-    <section class="config-panel">
-      <div class="config-header">
-        <div class="config-title-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="2" y1="12" x2="22" y2="12"/>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-          </svg>
-          <h3>Fuente de datos (API endpoint)</h3>
-        </div>
-        <span class="last-sync" id="last-sync-time">Última sincronización: {{FECHA_ACTUALIZACION}}</span>
+    <!-- Fuente de Datos y Última Sincronización (Centrado) -->
+    <section class="sync-panel">
+      <div class="sync-title-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <h3>Fuente de datos (API endpoint)</h3>
       </div>
-
-      <div class="config-input-group">
-        <input 
-          type="url" 
-          id="api-url-input" 
-          placeholder="https://tu-dominio.com/api/metricas" 
-          value="https://viva-raices.vercel.app/api/metricas"
-        >
-        <button id="btn-guardar-url" class="btn-save">Guardar URL</button>
-      </div>
-      <p class="config-hint">
-        Puedes cambiar la dirección de tu API si tu sitio está en Vercel, Netlify o un dominio propio. Se guardará automáticamente en tu navegador.
-      </p>
+      <span class="last-sync" id="last-sync-time">Última sincronización: {{FECHA_ACTUALIZACION}}</span>
     </section>
-
-    <!-- Pie de Página Informativo -->
-    <footer class="dashboard-footer">
-      <p>
-        <strong>Metodología Lean MVP</strong> · Medición transparente sin cargos bancarios reales.
-      </p>
-    </footer>
 
   </main>
 

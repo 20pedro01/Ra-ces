@@ -95,7 +95,7 @@ async function cargarMetricas() {
     animateValue(elVisitantes, prevVisitantes, data.visitantes ?? 0);
     animateValue(elCompras, prevCompras, data.intencion_compra ?? 0);
     if (elConversion) {
-      elConversion.textContent = data.tasa_conversion || '0%';
+      elConversion.textContent = `(${data.tasa_conversion || '0%'})`;
     }
 
     // Registrar hora
@@ -110,13 +110,17 @@ async function cargarMetricas() {
     elSyncTime.textContent = 'Fallo al conectar con la API';
     
     // Si falló y nunca se cargó nada, mostrar aviso
-    if (elVisitantes.textContent === '--') {
+    if (elVisitantes && elVisitantes.textContent === '--') {
       elVisitantes.textContent = '0';
+    }
+    if (elCompras && elCompras.textContent === '--') {
       elCompras.textContent = '0';
     }
   } finally {
-    elBtnActualizar.classList.remove('loading');
-    elBtnActualizar.disabled = false;
+    if (elBtnActualizar) {
+      elBtnActualizar.classList.remove('loading');
+      elBtnActualizar.disabled = false;
+    }
   }
 }
 
@@ -124,25 +128,28 @@ async function cargarMetricas() {
  * Inicialización al cargar la página
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // Cargar URL guardada en el input
-  elApiInput.value = getApiUrl();
+  if (elApiInput) {
+    elApiInput.value = getApiUrl();
+  }
 
-  // Escuchar botón de actualizar
-  elBtnActualizar.addEventListener('click', () => {
-    cargarMetricas();
-  });
+  if (elBtnActualizar) {
+    elBtnActualizar.addEventListener('click', () => {
+      cargarMetricas();
+    });
+  }
 
-  // Guardar nueva URL de la API
-  elBtnGuardarUrl.addEventListener('click', () => {
-    const nuevaUrl = elApiInput.value.trim();
-    if (!nuevaUrl) {
-      alert('Por favor ingresa una URL válida');
-      return;
-    }
-    localStorage.setItem(STORAGE_KEY, nuevaUrl);
-    alert('URL guardada correctamente. Actualizando métricas...');
-    cargarMetricas();
-  });
+  if (elBtnGuardarUrl && elApiInput) {
+    elBtnGuardarUrl.addEventListener('click', () => {
+      const nuevaUrl = elApiInput.value.trim();
+      if (!nuevaUrl) {
+        alert('Por favor ingresa una URL válida');
+        return;
+      }
+      localStorage.setItem(STORAGE_KEY, nuevaUrl);
+      alert('URL guardada correctamente. Actualizando métricas...');
+      cargarMetricas();
+    });
+  }
 
   // Primera carga automática al abrir el dashboard
   cargarMetricas();
