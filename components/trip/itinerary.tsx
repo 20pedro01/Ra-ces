@@ -134,17 +134,40 @@ export function Itinerary() {
                               <MapPin className="size-3.5" aria-hidden="true" /> {locExp.location}
                             </span>
                           </div>
-                          {item.pickup && (
-                            <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-earth/10 px-2.5 py-1 text-xs font-bold text-earth">
-                              {item.pickup === 'envio' ? (
-                                <Truck className="size-3.5" aria-hidden="true" />
-                              ) : (
-                                <Package className="size-3.5" aria-hidden="true" />
-                              )}
-                              {item.pickup === 'envio'
-                                ? t('trip.itinerary.shippingRequested')
-                                : t('trip.itinerary.pickupLater')}
-                            </p>
+                          {exp.isWorkshop && (
+                            <div className="my-1 flex flex-wrap items-center gap-2">
+                              <span className="text-xs font-semibold text-muted-foreground">
+                                {language === 'en' ? 'Piece delivery:' : 'Entrega:'}
+                              </span>
+                              <div className="inline-flex rounded-xl border border-border/80 bg-sand/60 p-0.5 text-xs">
+                                <button
+                                  type="button"
+                                  onClick={() => dispatch({ type: 'setPickup', experienceId: exp.id, pickup: 'recoger' })}
+                                  className={cn(
+                                    'inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all',
+                                    item.pickup !== 'envio'
+                                      ? 'bg-card text-foreground shadow-xs font-bold'
+                                      : 'text-muted-foreground hover:text-foreground'
+                                  )}
+                                >
+                                  <Package className="size-3 text-primary" />
+                                  <span>{language === 'en' ? 'Pick up' : 'Recoger'}</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => dispatch({ type: 'setPickup', experienceId: exp.id, pickup: 'envio' })}
+                                  className={cn(
+                                    'inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all',
+                                    item.pickup === 'envio'
+                                      ? 'bg-leaf text-leaf-foreground shadow-xs font-bold'
+                                      : 'text-muted-foreground hover:text-foreground'
+                                  )}
+                                >
+                                  <Truck className="size-3" />
+                                  <span>{language === 'en' ? 'With shipping' : 'Con envío'}</span>
+                                </button>
+                              </div>
+                            </div>
                           )}
                           <p className="mt-auto pt-1 font-bold">
                             {formatMXN(exp.price * state.people, language)}

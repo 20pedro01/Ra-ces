@@ -22,8 +22,8 @@ export function WorkshopFinish({ experienceId }: { experienceId: string }) {
         </h2>
         <p className="leading-relaxed text-foreground/85">
           {language === 'en'
-            ? "No worries. The artisan can complete it for you."
-            : 'No te preocupes. El artesano puede terminarla por ti.'}
+            ? 'No worries. The community workshop team can complete it for you and deliver it.'
+            : 'No te preocupes. El equipo del taller comunitario puede terminarla por ti y entregártela.'}
         </p>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">

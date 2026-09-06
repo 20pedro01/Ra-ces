@@ -55,11 +55,11 @@ export const EXPERIENCES_EN: Record<string, Partial<Experience>> = {
   'taller-de-hamacas': {
     name: 'Traditional Hammock Weaving Workshop',
     location: 'Tixkokob',
-    short: 'Learn the ancestral Maya technique of hammock weaving from Doña Martha.',
+    short: 'Learn the ancestral Maya technique of hammock weaving from local master artisans.',
     description:
-      'Immerse yourself in a home workshop in Tixkokob. Doña Martha and her family have woven traditional hammocks for three generations. Learn to handle the shuttle, choose vibrant color combinations, and weave your own sample piece to take home.',
+      'Immerse yourself in a community workshop in Tixkokob. An artisan family weaving traditional hammocks for three generations guides you step-by-step. Learn to handle the shuttle, choose vibrant color combinations, and weave your own sample piece to take home.',
     includes: [
-      'Instruction from master artisan Doña Martha',
+      'Instruction from master artisan weavers',
       'All thread, loom, and wooden shuttle supplies',
       'Woven mini-hammock sampler crafted by you',
       'Chilled regional drink and fruit snack',
@@ -68,7 +68,7 @@ export const EXPERIENCES_EN: Record<string, Partial<Experience>> = {
   'taller-de-ceramica': {
     name: 'Mayan Red Clay Pottery Workshop',
     location: 'Ticul',
-    short: 'Shape local clay into ancestral pots and Mayan whistles alongside Don Celso.',
+    short: 'Shape local clay into ancestral pots and Mayan whistles alongside community pottery masters.',
     description:
       'Visit the historic pottery town of Ticul — the cradle of Yucatecan ceramics. Work with raw red clay, learn ancestral hand-pinching and wheel techniques, and fire your own ceramic piece.',
     includes: [
@@ -81,7 +81,7 @@ export const EXPERIENCES_EN: Record<string, Partial<Experience>> = {
     location: 'Mérida, Santiago District',
     short: 'Design, bevel, and stitch your own genuine leather souvenir in Mérida.',
     description:
-      "Step inside Don Rafael's traditional leather shop — 40 years of craft. Master the ancient leatherworking craft: cutting, perforating, hand-stitching, and stamping your initials into fine regional leather.",
+      "Step inside a traditional neighborhood leather shop — over 40 years of craft. Master the ancient leatherworking craft: cutting, perforating, hand-stitching, and stamping your initials into fine regional leather.",
     includes: [
       'Leather hide, tools, and rivets',
       'Personalized initial stamping',

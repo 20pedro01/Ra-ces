@@ -28,10 +28,10 @@ export function PackageDetailContent({ pkg }: { pkg: TourPackage }) {
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-12 md:px-6 lg:grid-cols-[1fr_360px]">
-        <article className="-mt-16 flex flex-col gap-8 rounded-[2rem] bg-background p-1 md:-mt-20">
+        <article className="relative z-10 -mt-12 flex flex-col gap-8 rounded-[2.5rem] border border-border/80 bg-background p-6 shadow-md md:-mt-16 md:p-10">
           <header className="flex flex-col gap-3">
             <p className="text-sm font-bold uppercase tracking-wider text-leaf">{locPkg.tagline ?? pkg.tagline}</p>
-            <h1 className="text-4xl font-semibold leading-tight text-balance md:text-5xl">{locPkg.name}</h1>
+            <h1 className="text-3xl font-bold leading-tight text-balance sm:text-4xl md:text-5xl text-foreground">{locPkg.name}</h1>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="size-4" aria-hidden="true" /> {locPkg.durationLabel}

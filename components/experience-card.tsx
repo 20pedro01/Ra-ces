@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, Clock, MapPin, Plus, Sparkles } from 'lucide-react'
+import { Check, Clock, MapPin, Plus, Sparkles, Truck } from 'lucide-react'
 import { CategoryBadge } from '@/components/category-badge'
 import { formatDuration, formatMXN } from '@/lib/format'
 import type { Experience } from '@/lib/data'
@@ -64,6 +64,13 @@ export function ExperienceCard({
         </div>
 
         <p className="text-sm leading-relaxed text-foreground/85">{locExp.short}</p>
+
+        {experience.isWorkshop && (
+          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-sand/80 px-2.5 py-1 text-[11px] font-semibold text-earth">
+            <Truck className="size-3" />
+            {language === 'en' ? 'Workshop: Optional shipping' : 'Taller con opción de envío'}
+          </span>
+        )}
 
         {reason && (
           <p className="flex gap-2 rounded-2xl bg-secondary px-3 py-2 text-sm leading-snug text-secondary-foreground">

@@ -89,12 +89,12 @@ export const EXPERIENCES: Experience[] = [
     price: 650,
     image: '/images/hamaca.png',
     short:
-      'Aprende con un artesano local las técnicas tradicionales para tejer una hamaca en bastidor.',
+      'Aprende con artesanas locales las técnicas tradicionales para tejer una hamaca en bastidor.',
     description:
-      'En el patio de una casa familiar de Tixkokob, doña Marbella y su familia te enseñan a montar el hilo en el bastidor y a tejer los primeros tramos de tu propia hamaca. Tú tejes, ellos guían. Te llevas una pieza pequeña y una historia que contar.',
+      'En el patio de una casa comunitaria de Tixkokob, maestras artesanas locales te enseñan a montar el hilo en el bastidor y a tejer los primeros tramos de tu propia hamaca. Tú tejes, ellas guían. Te llevas una pieza pequeña y una historia que contar.',
     includes: ['Materiales para tu pieza', 'Agua de chaya y galletas', 'Guía local en español e inglés'],
     isWorkshop: true,
-    provider: 'Familia Canul · Tixkokob',
+    provider: 'Cooperativa de Artesanas · Tixkokob',
   },
   {
     id: 'ceramica',
@@ -109,10 +109,10 @@ export const EXPERIENCES: Experience[] = [
     short:
       'Moldea tu propia pieza de barro con un maestro ceramista de Ticul, cuna de la alfarería yucateca.',
     description:
-      'Ticul huele a barro y a leña. En este taller trabajarás con tus manos una pieza de cerámica desde el amasado hasta el decorado, siguiendo técnicas heredadas por generaciones. Tu pieza se hornea después y puedes recogerla o pedir envío.',
+      'Ticul huele a barro y a leña. En este taller trabajarás con tus manos una pieza de cerámica desde el amasado hasta el decorado, de la mano de maestros alfareros de la comunidad. Tu pieza se hornea después y puedes recogerla o pedir envío.',
     includes: ['Barro y herramientas', 'Horneado de la pieza', 'Bebida tradicional'],
     isWorkshop: true,
-    provider: 'Taller Uh · Ticul',
+    provider: 'Taller Alfarero Comunitario · Ticul',
   },
   {
     id: 'talabarteria',
@@ -127,10 +127,10 @@ export const EXPERIENCES: Experience[] = [
     short:
       'Corta, cose y graba en piel una cartera o llavero junto a un talabartero de oficio.',
     description:
-      'Don Rafael lleva 40 años trabajando la piel. En su taller aprenderás a cortar, perforar y coser a mano una pieza pequeña que te llevas puesta. Una mirada honesta a un oficio que sigue vivo en los barrios de Mérida.',
+      'En un taller de tradición con más de 40 años de oficio en los barrios de Mérida, aprenderás a cortar, perforar y coser a mano una pieza pequeña que te llevas puesta. Una mirada honesta a un oficio que sigue vivo en los barrios de Mérida.',
     includes: ['Piel y herrajes', 'Herramientas', 'Grabado con tus iniciales'],
     isWorkshop: true,
-    provider: 'Talabartería Rafael · Mérida',
+    provider: 'Taller Tradicional de Piel · Mérida',
   },
   {
     id: 'punto-cruz',
@@ -165,7 +165,7 @@ export const EXPERIENCES: Experience[] = [
     description:
       'Empiezas en el mercado eligiendo ingredientes y terminas en una mesa larga comiendo lo que preparaste. Tú tortillas, tú fríes, tú sirves. Aprendes las diferencias entre panucho y salbute y por qué la cebolla morada va con habanero.',
     includes: ['Visita al mercado', 'Todos los ingredientes', 'Comida completa y recetario'],
-    provider: 'Cocina de la Tía Lupe · Mérida',
+    provider: 'Cocina Tradicional Yucateca · Mérida',
   },
   {
     id: 'recados',
@@ -182,7 +182,7 @@ export const EXPERIENCES: Experience[] = [
     description:
       'En Espita se muelen los recados más famosos del oriente. Aprenderás a tostar achiote, chiles y especias en comal, molerlos y formar tus propias pastas. Te llevas frascos de recado hechos por ti.',
     includes: ['Especias y achiote', 'Frascos para llevar', 'Degustación de cochinita'],
-    provider: 'Molino Doña Chuy · Espita',
+    provider: 'Molino Tradicional de Especias · Espita',
   },
   {
     id: 'cenote-abierto',
@@ -216,7 +216,7 @@ export const EXPERIENCES: Experience[] = [
     description:
       'Entrar al cenote a primera hora, cuando el rayo de luz apenas toca el agua, es otra experiencia. Un guía local te acompaña a la caverna y te cuenta lo que este lugar significa para su pueblo.',
     includes: ['Acceso privado temprano', 'Guía local', 'Café y pan dulce'],
-    provider: 'Familia Poot · Cuzamá',
+    provider: 'Guías Comunitarios de Cuzamá',
   },
   {
     id: 'meliponas',
