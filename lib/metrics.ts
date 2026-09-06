@@ -47,20 +47,26 @@ export async function getMetrics(): Promise<MetricsData & { tasa_conversion: str
   // 1. Intentar consultar desde Supabase si está disponible
   if (isSupabaseConfigured && supabase) {
     try {
+      // Probar primero con la tabla dedicada metricas_mvp
       const [visitasRes, comprasRes] = await Promise.all([
         supabase.from('metricas_mvp').select('*', { count: 'exact', head: true }).eq('tipo', 'visita'),
         supabase.from('metricas_mvp').select('*', { count: 'exact', head: true }).eq('tipo', 'intencion_compra'),
       ])
 
-      let visitantesSupabase = visitasRes.count ?? 0
-      let comprasSupabase = comprasRes.count ?? 0
+      let visitantesSupabase = 0
+      let comprasSupabase = 0
 
-      // Si la tabla metricas_mvp no existe aún o no tiene compras, consultar tabla reservaciones como respaldo
-      if (comprasRes.error) {
-        const reservasRes = await supabase.from('reservaciones').select('*', { count: 'exact', head: true })
-        if (!reservasRes.error && reservasRes.count !== null) {
-          comprasSupabase = reservasRes.count
-        }
+      if (!visitasRes.error && !comprasRes.error) {
+        visitantesSupabase = visitasRes.count ?? 0
+        comprasSupabase = comprasRes.count ?? 0
+      } else {
+        // Respaldo transparente: si metricas_mvp no existe en Supabase, leer desde reservaciones
+        const [visitasBackup, comprasBackup] = await Promise.all([
+          supabase.from('reservaciones').select('*', { count: 'exact', head: true }).eq('status', 'visita'),
+          supabase.from('reservaciones').select('*', { count: 'exact', head: true }).in('status', ['intencion_compra', 'confirmada']),
+        ])
+        visitantesSupabase = visitasBackup.count ?? 0
+        comprasSupabase = comprasBackup.count ?? 0
       }
 
       // Combinar con base local si existe
@@ -102,18 +108,34 @@ export async function recordMetric(
   local.ultima_actualizacion = new Date().toISOString()
   writeLocalMetrics(local)
 
-  // También persistir en Supabase si está activo
+  // Persistir en Supabase de forma permanente
   if (isSupabaseConfigured && supabase) {
     try {
-      await supabase.from('metricas_mvp').insert([
+      // 1. Intentar insertar en la tabla dedicada metricas_mvp
+      const { error } = await supabase.from('metricas_mvp').insert([
         {
           tipo,
           metadata: metadata || null,
           created_at: new Date().toISOString(),
         },
       ])
+
+      // 2. Si la tabla metricas_mvp aún no fue creada en Supabase, guardar como respaldo en reservaciones
+      if (error && error.code === 'PGRST205') {
+        const prefix = tipo === 'visita' ? 'VIS-' : 'INT-'
+        const uniqueCode = prefix + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
+        await supabase.from('reservaciones').insert([
+          {
+            code: uniqueCode,
+            total: (typeof metadata?.total === 'number' ? metadata.total : 0),
+            status: tipo === 'visita' ? 'visita' : 'intencion_compra',
+            customer_name: (typeof metadata?.customerName === 'string' ? metadata.customerName : null),
+            customer_email: (typeof metadata?.customerEmail === 'string' ? metadata.customerEmail : null),
+          },
+        ])
+      }
     } catch (err) {
-      console.warn('No se pudo insertar evento en Supabase metricas_mvp:', err)
+      console.warn('Error al persistir métrica en Supabase:', err)
     }
   }
 
