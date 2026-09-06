@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Bus, Map, X } from 'lucide-react'
+import { ArrowRight, Bus, Map, Package, Truck, X } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { EXPERIENCE_MAP, PACKAGES, TRANSPORT_PRICE_PER_PERSON } from '@/lib/data'
 import { formatMXN } from '@/lib/format'
@@ -40,19 +40,53 @@ export function TripSummaryBar({ showContinue = true }: { showContinue?: boolean
             if (!exp) return null
             const locExp = getLocalizedExperience(exp, language)
             return (
-              <li key={item.experienceId} className="flex items-start justify-between gap-2 text-sm">
-                <span className="flex items-start gap-1.5">
-                  <button
-                    type="button"
-                    aria-label={t('trip.itinerary.removeExperience').replace('{name}', locExp.name)}
-                    onClick={() => dispatch({ type: 'removeExperience', experienceId: exp.id })}
-                    className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                  <span>{locExp.name}</span>
-                </span>
-                <span className="whitespace-nowrap">{formatMXN(exp.price * state.people, language)}</span>
+              <li key={item.experienceId} className="flex flex-col gap-1 text-sm border-b border-border/40 pb-2">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="flex items-start gap-1.5">
+                    <button
+                      type="button"
+                      aria-label={t('trip.itinerary.removeExperience').replace('{name}', locExp.name)}
+                      onClick={() => dispatch({ type: 'removeExperience', experienceId: exp.id })}
+                      className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                    <span className="font-medium">{locExp.name}</span>
+                  </span>
+                  <span className="whitespace-nowrap font-semibold">{formatMXN(exp.price * state.people, language)}</span>
+                </div>
+                {exp.isWorkshop && (
+                  <div className="flex items-center justify-between pl-6 text-[11px]">
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      {item.pickup === 'envio' ? (
+                        <>
+                          <Truck className="size-3 text-leaf" />
+                          <strong className="text-leaf">{language === 'en' ? 'Shipping requested' : 'Con envío'}</strong>
+                        </>
+                      ) : (
+                        <>
+                          <Package className="size-3 text-primary" />
+                          <span>{language === 'en' ? 'Pick up at workshop' : 'Recoger en taller'}</span>
+                        </>
+                      )}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        dispatch({
+                          type: 'setPickup',
+                          experienceId: exp.id,
+                          pickup: item.pickup === 'envio' ? 'recoger' : 'envio',
+                        })
+                      }
+                      className="text-primary hover:underline font-bold"
+                    >
+                      {item.pickup === 'envio'
+                        ? (language === 'en' ? 'Change to pickup' : 'Cambiar a recoger')
+                        : (language === 'en' ? 'Add shipping' : 'Pedir con envío')}
+                    </button>
+                  </div>
+                )}
               </li>
             )
           })}

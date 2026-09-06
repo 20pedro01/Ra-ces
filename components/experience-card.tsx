@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, Clock, MapPin, Plus, Sparkles, Truck } from 'lucide-react'
+import { Check, Clock, MapPin, Package, Plus, Sparkles, Truck } from 'lucide-react'
 import { CategoryBadge } from '@/components/category-badge'
 import { formatDuration, formatMXN } from '@/lib/format'
 import type { Experience } from '@/lib/data'
@@ -21,10 +21,12 @@ export function ExperienceCard({
   reason?: string
   className?: string
 }) {
-  const { hasItem, dispatch } = useTrip()
+  const { hasItem, dispatch, state } = useTrip()
   const { language, t } = useLanguage()
   const locExp = getLocalizedExperience(experience, language)
   const added = hasItem(experience.id)
+  const currentItem = state.items.find((i) => i.experienceId === experience.id)
+  const currentPickup = currentItem?.pickup ?? 'recoger'
 
   return (
     <article
@@ -66,10 +68,48 @@ export function ExperienceCard({
         <p className="text-sm leading-relaxed text-foreground/85">{locExp.short}</p>
 
         {experience.isWorkshop && (
-          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-sand/80 px-2.5 py-1 text-[11px] font-semibold text-earth">
-            <Truck className="size-3" />
-            {language === 'en' ? 'Workshop: Optional shipping' : 'Taller con opción de envío'}
-          </span>
+          <div className="flex flex-col gap-1.5 rounded-2xl border border-border/80 bg-sand/70 p-2.5 text-xs">
+            <span className="flex items-center gap-1.5 font-bold text-foreground text-[11px]">
+              <Package className="size-3 text-earth" />
+              {language === 'en' ? 'Piece delivery method:' : 'Entrega de tu pieza elaborada:'}
+            </span>
+            <div className="grid grid-cols-2 gap-1.5">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  if (!added) dispatch({ type: 'addExperience', experienceId: experience.id })
+                  dispatch({ type: 'setPickup', experienceId: experience.id, pickup: 'recoger' })
+                }}
+                className={cn(
+                  'flex items-center justify-center gap-1 rounded-xl border p-1.5 text-center text-xs transition-all',
+                  added && currentPickup === 'recoger'
+                    ? 'border-primary bg-primary/10 text-foreground font-bold shadow-xs'
+                    : 'border-border/80 bg-card text-muted-foreground hover:border-primary/50'
+                )}
+              >
+                <Package className="size-3 text-primary" />
+                <span>{language === 'en' ? 'Pick up' : 'Recoger'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  if (!added) dispatch({ type: 'addExperience', experienceId: experience.id })
+                  dispatch({ type: 'setPickup', experienceId: experience.id, pickup: 'envio' })
+                }}
+                className={cn(
+                  'flex items-center justify-center gap-1 rounded-xl border p-1.5 text-center text-xs transition-all',
+                  added && currentPickup === 'envio'
+                    ? 'border-leaf bg-leaf/15 text-leaf font-bold shadow-xs'
+                    : 'border-border/80 bg-card text-muted-foreground hover:border-leaf/50'
+                )}
+              >
+                <Truck className="size-3 text-leaf" />
+                <span>{language === 'en' ? 'With shipping' : 'Con envío'}</span>
+              </button>
+            </div>
+          </div>
         )}
 
         {reason && (
