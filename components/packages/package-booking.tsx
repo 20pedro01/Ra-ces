@@ -2,14 +2,16 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertCircle, ArrowRight, Bus, Minus, Plus } from 'lucide-react'
+import { AlertCircle, ArrowRight, Bus, Clock, Minus, Plus } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
+import { AvailabilityNotifier } from '@/components/availability-notifier'
 import type { TourPackage } from '@/lib/data'
 import { addDays, formatMXN } from '@/lib/format'
 import {
   getTodayIso,
   getMaxFutureDateIso,
   validateSingleDate,
+  isLastMinuteBooking,
   MAX_BOOKING_MONTHS_AHEAD,
 } from '@/lib/date-validation'
 import { useTrip } from '@/lib/trip-store'
@@ -20,6 +22,7 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
   const [transport, setTransport] = useState(state.packageId === pkg.id ? state.packageTransport : false)
   const [date, setDate] = useState(state.startDate ?? addDays(getTodayIso(), 14))
   const [dateError, setDateError] = useState<string | null>(null)
+  const [futureIssue, setFutureIssue] = useState(false)
 
   const people = state.people
   const subtotal = pkg.price * people
@@ -29,9 +32,11 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
     const validation = validateSingleDate(date)
     if (!validation.isValid) {
       setDateError(validation.error)
+      setFutureIssue(Boolean(validation.isFutureAvailabilityIssue))
       return
     }
     setDateError(null)
+    setFutureIssue(false)
     dispatch({ type: 'setDates', startDate: date, endDate: date })
     dispatch({ type: 'selectPackage', packageId: pkg.id, transport })
     router.push('/mi-viaje/reservar')
@@ -56,11 +61,24 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
           max={getMaxFutureDateIso()}
           onChange={(e) => {
             setDate(e.target.value)
-            if (dateError) setDateError(null)
+            if (dateError) {
+              setDateError(null)
+              setFutureIssue(false)
+            }
           }}
           className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
         />
       </label>
+
+      {isLastMinuteBooking(date) && (
+        <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
+          <Clock className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+          <div>
+            <span className="font-bold">Reservación en menos de 48 horas:</span>{' '}
+            Coordinaremos directamente con los artesanos y el chofer para confirmar de inmediato tu espacio.
+          </div>
+        </div>
+      )}
 
       {dateError && (
         <div
@@ -70,6 +88,13 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
           <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
           <span>{dateError}</span>
         </div>
+      )}
+
+      {futureIssue && (
+        <AvailabilityNotifier
+          targetDate={date}
+          experienceOrPackage={`Paquete: ${pkg.name}`}
+        />
       )}
 
       <p className="-mt-2 text-xs text-muted-foreground">

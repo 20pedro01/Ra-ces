@@ -31,6 +31,9 @@ export function getMaxFutureDateIso(monthsAhead = MAX_BOOKING_MONTHS_AHEAD): str
 export interface DateValidationResult {
   isValid: boolean
   error: string | null
+  isFutureAvailabilityIssue?: boolean
+  isPastIssue?: boolean
+  isOrderIssue?: boolean
 }
 
 /**
@@ -63,6 +66,7 @@ export function validateDates(
   if (startDate < today) {
     return {
       isValid: false,
+      isPastIssue: true,
       error: 'La fecha de llegada no puede ser una fecha pasada. Por favor elige una fecha a partir de hoy.',
     }
   }
@@ -71,6 +75,7 @@ export function validateDates(
   if (endDate < today) {
     return {
       isValid: false,
+      isPastIssue: true,
       error: 'La fecha de salida no puede ser una fecha pasada.',
     }
   }
@@ -79,6 +84,7 @@ export function validateDates(
   if (endDate < startDate) {
     return {
       isValid: false,
+      isOrderIssue: true,
       error: 'La fecha de salida no puede ser anterior a la fecha de llegada.',
     }
   }
@@ -87,6 +93,7 @@ export function validateDates(
   if (startDate > maxDate || endDate > maxDate) {
     return {
       isValid: false,
+      isFutureAvailabilityIssue: true,
       error: `Aún no se cuenta con disponibilidad para esas fechas. Las reservaciones de talleres y experiencias solo se pueden programar con hasta ${MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para garantizar la disponibilidad y agenda de los maestros artesanos.`,
     }
   }
@@ -124,6 +131,7 @@ export function validateSingleDate(date?: string | null): DateValidationResult {
   if (date < today) {
     return {
       isValid: false,
+      isPastIssue: true,
       error: 'No es posible reservar en fechas pasadas. Por favor selecciona una fecha a partir de hoy.',
     }
   }
@@ -131,9 +139,22 @@ export function validateSingleDate(date?: string | null): DateValidationResult {
   if (date > maxDate) {
     return {
       isValid: false,
+      isFutureAvailabilityIssue: true,
       error: `Aún no se cuenta con disponibilidad para esa fecha. Las reservaciones de talleres y experiencias solo se pueden programar con hasta ${MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para garantizar la disponibilidad de los artesanos.`,
     }
   }
 
   return { isValid: true, error: null }
+}
+
+/**
+ * Indica si una reservación se realiza con menos de 48 horas de anticipación.
+ */
+export function isLastMinuteBooking(startDate?: string | null): boolean {
+  if (!startDate) return false
+  const todayIso = getTodayIso()
+  const today = new Date(`${todayIso}T12:00:00`)
+  const start = new Date(`${startDate}T12:00:00`)
+  const diffDays = Math.round((start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  return diffDays >= 0 && diffDays <= 2
 }

@@ -9,6 +9,8 @@ import {
   Bus,
   Calendar,
   Check,
+  Clock,
+  Info,
   Leaf,
   Loader2,
   Package,
@@ -17,12 +19,14 @@ import {
   Users,
 } from 'lucide-react'
 import { GuideBubble } from '@/components/chat/chat-bubble'
+import { AvailabilityNotifier } from '@/components/availability-notifier'
 import { EXPERIENCE_MAP, PACKAGES, TRANSPORT_PRICE_PER_PERSON } from '@/lib/data'
 import { addDays, formatDate, formatDateShort, formatHour, formatMXN } from '@/lib/format'
 import {
   getTodayIso,
   getMaxFutureDateIso,
   validateDates,
+  isLastMinuteBooking,
   MAX_BOOKING_MONTHS_AHEAD,
 } from '@/lib/date-validation'
 import { useTrip } from '@/lib/trip-store'
@@ -37,6 +41,7 @@ export function BookingFlow() {
   const [startDateInput, setStartDateInput] = useState(state.startDate ?? '')
   const [endDateInput, setEndDateInput] = useState(state.endDate ?? state.startDate ?? '')
   const [dateInlineError, setDateInlineError] = useState<string | null>(null)
+  const [dateIsFutureIssue, setDateIsFutureIssue] = useState(false)
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
   const empty = state.items.length === 0 && !pkg
 
@@ -71,6 +76,7 @@ export function BookingFlow() {
     if (!dateValidation.isValid) {
       setErrorMsg(dateValidation.error)
       setEditingDates(true)
+      setDateIsFutureIssue(Boolean(dateValidation.isFutureAvailabilityIssue))
       return
     }
 
@@ -160,7 +166,10 @@ export function BookingFlow() {
                         onChange={(e) => {
                           const val = e.target.value
                           setStartDateInput(val)
-                          if (dateInlineError) setDateInlineError(null)
+                          if (dateInlineError) {
+                            setDateInlineError(null)
+                            setDateIsFutureIssue(false)
+                          }
                           if (val && endDateInput && val > endDateInput) setEndDateInput(val)
                         }}
                         className="h-9 rounded-lg border border-input bg-background px-2.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -175,7 +184,10 @@ export function BookingFlow() {
                         max={getMaxFutureDateIso()}
                         onChange={(e) => {
                           setEndDateInput(e.target.value)
-                          if (dateInlineError) setDateInlineError(null)
+                          if (dateInlineError) {
+                            setDateInlineError(null)
+                            setDateIsFutureIssue(false)
+                          }
                         }}
                         className="h-9 rounded-lg border border-input bg-background px-2.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       />
@@ -187,6 +199,15 @@ export function BookingFlow() {
                       <span>{dateInlineError}</span>
                     </p>
                   )}
+
+                  {dateIsFutureIssue && (
+                    <AvailabilityNotifier
+                      targetDate={startDateInput}
+                      experienceOrPackage="Mi Viaje"
+                      className="mt-1"
+                    />
+                  )}
+
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-[11px] text-muted-foreground">
                       Máx. {MAX_BOOKING_MONTHS_AHEAD} meses a futuro
@@ -197,9 +218,11 @@ export function BookingFlow() {
                         const val = validateDates(startDateInput, endDateInput)
                         if (!val.isValid) {
                           setDateInlineError(val.error)
+                          setDateIsFutureIssue(Boolean(val.isFutureAvailabilityIssue))
                           return
                         }
                         setDateInlineError(null)
+                        setDateIsFutureIssue(false)
                         setErrorMsg(null)
                         dispatch({
                           type: 'setDates',
@@ -355,6 +378,16 @@ export function BookingFlow() {
           </div>
         </dl>
 
+        {isLastMinuteBooking(state.startDate) && (
+          <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-900 dark:text-amber-200">
+            <Clock className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            <div>
+              <span className="font-bold">Reservación en las próximas 48 horas:</span>{' '}
+              Los talleres artesanales requieren preparación previa de insumos frescos. Al confirmar, coordinaremos inmediatamente con los artesanos para asegurar tu espacio sin contratiempos.
+            </div>
+          </div>
+        )}
+
         {errorMsg && (
           <div
             role="alert"
@@ -428,6 +461,20 @@ function Confirmation() {
           <dd className="font-semibold">{formatMXN(totals.total)}</dd>
         </div>
       </dl>
+
+      <div className="w-full max-w-xl rounded-2xl border border-primary/20 bg-primary/5 p-4 text-left sm:p-5">
+        <div className="flex items-start gap-3">
+          <div className="rounded-full bg-primary/15 p-2 text-primary">
+            <Info className="size-5 shrink-0" aria-hidden="true" />
+          </div>
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-bold text-foreground">Coordinación artesanal y comunitaria</span>
+            <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
+              Cada taller se imparte en grupos reducidos guiados directamente por maestros y familias artesanas. Nos pondremos en contacto contigo por correo o teléfono para afinar detalles de llegada, puntos de encuentro y responder cualquier duda antes de tu visita.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="flex flex-wrap justify-center gap-3">
         <Link

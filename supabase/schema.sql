@@ -63,3 +63,27 @@ CREATE POLICY "Permitir lectura de reservaciones"
   FOR SELECT
   TO anon, authenticated
   USING (true);
+
+-- ==============================================================================
+-- 5. Tabla de Lista de Espera / Notificaciones de Disponibilidad
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.lista_espera (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  email TEXT NOT NULL,
+  target_date DATE,
+  notes TEXT,
+  status TEXT NOT NULL DEFAULT 'pendiente'
+);
+
+CREATE INDEX IF NOT EXISTS idx_lista_espera_email ON public.lista_espera (email);
+CREATE INDEX IF NOT EXISTS idx_lista_espera_created_at ON public.lista_espera (created_at DESC);
+
+ALTER TABLE public.lista_espera ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Permitir inserción pública en lista_espera"
+  ON public.lista_espera
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+

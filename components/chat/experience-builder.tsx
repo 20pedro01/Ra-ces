@@ -7,6 +7,7 @@ import {
   ArrowRight,
   Bus,
   Car,
+  Clock,
   Minus,
   Plus,
   RotateCcw,
@@ -17,12 +18,14 @@ import { OptionButton } from '@/components/chat/option-button'
 import { CATEGORY_ICONS } from '@/components/category-badge'
 import { ExperienceCard } from '@/components/experience-card'
 import { TripSummaryBar } from '@/components/trip/trip-summary-bar'
+import { AvailabilityNotifier } from '@/components/availability-notifier'
 import { BUDGETS, CATEGORIES, ZONES, type BudgetId, type CategoryId, type Zone } from '@/lib/data'
 import { addDays, formatDate, formatDateShort } from '@/lib/format'
 import {
   getTodayIso,
   getMaxFutureDateIso,
   validateDates,
+  isLastMinuteBooking,
   MAX_BOOKING_MONTHS_AHEAD,
 } from '@/lib/date-validation'
 import { recommend } from '@/lib/recommend'
@@ -52,6 +55,7 @@ export function ExperienceBuilder() {
   const [startDate, setStartDate] = useState(state.startDate ?? addDays(getTodayIso(), 14))
   const [endDate, setEndDate] = useState(state.endDate ?? addDays(getTodayIso(), 17))
   const [dateError, setDateError] = useState<string | null>(null)
+  const [futureIssue, setFutureIssue] = useState(false)
   const [zone, setZone] = useState<Zone | null>(state.zone)
   const [lodging, setLodging] = useState(state.lodging)
   const [categories, setCategories] = useState<CategoryId[]>(state.categories)
@@ -186,7 +190,10 @@ export function ExperienceBuilder() {
                         onChange={(e) => {
                           const val = e.target.value
                           setStartDate(val)
-                          if (dateError) setDateError(null)
+                          if (dateError) {
+                            setDateError(null)
+                            setFutureIssue(false)
+                          }
                           if (val && endDate && val > endDate) setEndDate(val)
                         }}
                         className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
@@ -201,12 +208,25 @@ export function ExperienceBuilder() {
                         max={getMaxFutureDateIso()}
                         onChange={(e) => {
                           setEndDate(e.target.value)
-                          if (dateError) setDateError(null)
+                          if (dateError) {
+                            setDateError(null)
+                            setFutureIssue(false)
+                          }
                         }}
                         className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
                       />
                     </label>
                   </div>
+
+                  {isLastMinuteBooking(startDate) && (
+                    <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
+                      <Clock className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                      <div>
+                        <span className="font-bold">Viaje en las próximas 48 horas:</span>{' '}
+                        Los artesanos preparan materiales frescos con anticipación. Al confirmar tu itinerario, coordinaremos de inmediato para asegurar tu espacio.
+                      </div>
+                    </div>
+                  )}
 
                   {dateError && (
                     <div
@@ -218,6 +238,13 @@ export function ExperienceBuilder() {
                     </div>
                   )}
 
+                  {futureIssue && (
+                    <AvailabilityNotifier
+                      targetDate={startDate}
+                      experienceOrPackage="Itinerario general"
+                    />
+                  )}
+
                   <p className="text-xs text-muted-foreground">
                     * Reservaciones de talleres disponibles hasta con {MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para coordinar la disponibilidad con los artesanos locales.
                   </p>
@@ -227,9 +254,11 @@ export function ExperienceBuilder() {
                       const validation = validateDates(startDate, endDate)
                       if (!validation.isValid) {
                         setDateError(validation.error)
+                        setFutureIssue(Boolean(validation.isFutureAvailabilityIssue))
                         return
                       }
                       setDateError(null)
+                      setFutureIssue(false)
                       dispatch({ type: 'setDates', startDate, endDate })
                       next()
                     }}
