@@ -1,20 +1,17 @@
+'use client'
+
 import Link from 'next/link'
 import { Compass, Backpack, ArrowRight } from 'lucide-react'
 import { GuideBubble } from '@/components/chat/chat-bubble'
+import { useLanguage } from '@/lib/i18n/context'
 
 export function HeroChat() {
+  const { t } = useLanguage()
   return (
     <div className="w-full max-w-2xl rounded-[2rem] border border-border/60 bg-background/95 p-4 shadow-2xl shadow-foreground/20 backdrop-blur md:p-6">
       <div className="flex flex-col gap-3">
         <GuideBubble>
-          <p>
-            ¡Hola! Soy tu guía Raíces.
-            <br />
-            Estoy aquí para ayudarte a descubrir experiencias auténticas de Yucatán.
-          </p>
-        </GuideBubble>
-        <GuideBubble className="[animation-delay:0.25s]">
-          <p className="font-bold">¿Qué quieres hacer?</p>
+          <p>{t('home.hero.bubble')}</p>
         </GuideBubble>
       </div>
 
@@ -27,8 +24,8 @@ export function HeroChat() {
             <Compass className="size-6" aria-hidden="true" />
           </span>
           <span className="flex flex-1 flex-col">
-            <span className="text-lg font-bold leading-tight">Armar mi experiencia</span>
-            <span className="text-sm text-primary-foreground/85">Te hago unas preguntas y te recomiendo</span>
+            <span className="text-lg font-bold leading-tight">{t('home.hero.buildExperience')}</span>
+            <span className="text-sm text-primary-foreground/85">{t('home.hero.buildHint')}</span>
           </span>
           <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </Link>
@@ -41,8 +38,8 @@ export function HeroChat() {
             <Backpack className="size-6" aria-hidden="true" />
           </span>
           <span className="flex flex-1 flex-col">
-            <span className="text-lg font-bold leading-tight">Ver paquetes</span>
-            <span className="text-sm text-earth-foreground/85">Rutas listas diseñadas con comunidades</span>
+            <span className="text-lg font-bold leading-tight">{t('home.hero.viewPackages')}</span>
+            <span className="text-sm text-earth-foreground/85">{t('home.hero.packagesHint')}</span>
           </span>
           <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </Link>

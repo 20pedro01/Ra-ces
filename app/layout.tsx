@@ -42,6 +42,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+import { LanguageProvider } from '@/lib/i18n/context'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,10 +52,12 @@ export default function RootLayout({
   return (
     <html lang="es-MX" className={`bg-background ${fraunces.variable} ${nunito.variable}`}>
       <body className="min-h-dvh antialiased">
-        <TripProvider>
-          <SiteNav />
-          <div className="pb-24 md:pb-0">{children}</div>
-        </TripProvider>
+        <LanguageProvider>
+          <TripProvider>
+            <SiteNav />
+            <div className="pb-24 md:pb-0">{children}</div>
+          </TripProvider>
+        </LanguageProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

@@ -1,6 +1,10 @@
+'use client'
+
 import { Leaf, UtensilsCrossed, Handshake, Moon } from 'lucide-react'
 import { CATEGORY_MAP, type CategoryId } from '@/lib/data'
 import { cn } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n/context'
+import { getLocalizedCategory } from '@/lib/i18n/data-translations'
 
 export const CATEGORY_ICONS = {
   naturaleza: Leaf,
@@ -23,7 +27,9 @@ export function CategoryBadge({
   category: CategoryId
   className?: string
 }) {
+  const { language } = useLanguage()
   const Icon = CATEGORY_ICONS[category]
+  const cat = getLocalizedCategory(category, language)
   return (
     <span
       className={cn(
@@ -33,7 +39,7 @@ export function CategoryBadge({
       )}
     >
       <Icon className="size-3.5" aria-hidden="true" />
-      {CATEGORY_MAP[category].name}
+      {cat.name}
     </span>
   )
 }

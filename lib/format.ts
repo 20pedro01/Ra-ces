@@ -1,28 +1,31 @@
-export function formatMXN(value: number) {
-  return new Intl.NumberFormat('es-MX', {
+export function formatMXN(value: number, locale: 'es' | 'en' = 'es') {
+  return new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-MX', {
     style: 'currency',
     currency: 'MXN',
     maximumFractionDigits: 0,
   }).format(value)
 }
 
-export function formatDuration(hours: number) {
+export function formatDuration(hours: number, locale: 'es' | 'en' = 'es') {
+  if (locale === 'en') {
+    return `${hours} hr${hours !== 1 ? 's' : ''}`
+  }
   if (Number.isInteger(hours)) return `${hours} h`
   return `${hours.toString().replace('.', ',')} h`
 }
 
-export function formatDate(iso: string) {
+export function formatDate(iso: string, locale: 'es' | 'en' = 'es') {
   const date = new Date(`${iso}T12:00:00`)
-  return new Intl.DateTimeFormat('es-MX', {
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-MX', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   }).format(date)
 }
 
-export function formatDateShort(iso: string) {
+export function formatDateShort(iso: string, locale: 'es' | 'en' = 'es') {
   const date = new Date(`${iso}T12:00:00`)
-  return new Intl.DateTimeFormat('es-MX', {
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-MX', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Bell, Calendar, Check, Loader2, Mail, ShieldCheck } from 'lucide-react'
 import { formatDate } from '@/lib/format'
 import { getMaxFutureDateIso } from '@/lib/date-validation'
+import { useLanguage } from '@/lib/i18n/context'
 
 interface AvailabilityNotifierProps {
   targetDate?: string | null
@@ -18,6 +19,7 @@ export function AvailabilityNotifier({
   className = '',
   allowCustomDate = false,
 }: AvailabilityNotifierProps) {
+  const { t, language } = useLanguage()
   const [email, setEmail] = useState('')
   const [futureDate, setFutureDate] = useState(targetDate || getMaxFutureDateIso())
   const [loading, setLoading] = useState(false)
@@ -25,12 +27,16 @@ export function AvailabilityNotifier({
   const [error, setError] = useState<string | null>(null)
 
   const effectiveDate = targetDate || futureDate
-  const dateFormatted = effectiveDate ? formatDate(effectiveDate) : 'la fecha seleccionada'
+  const dateFormatted = effectiveDate
+    ? formatDate(effectiveDate, language)
+    : language === 'en' ? 'the selected date' : 'la fecha seleccionada'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !email.includes('@')) {
-      setError('Por favor ingresa un correo electrónico válido.')
+      setError(language === 'en'
+        ? 'Please enter a valid email address.'
+        : 'Por favor ingresa un correo electrónico válido.')
       return
     }
 
@@ -50,7 +56,7 @@ export function AvailabilityNotifier({
 
       const data = await res.json()
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'No se pudo registrar tu solicitud')
+        throw new Error(data.error || (language === 'en' ? 'Could not register your request.' : 'No se pudo registrar tu solicitud'))
       }
 
       setSent(true)
@@ -59,7 +65,7 @@ export function AvailabilityNotifier({
       setError(
         err instanceof Error
           ? err.message
-          : 'Ocurrió un error. Intenta nuevamente.'
+          : (language === 'en' ? 'An error occurred. Please try again.' : 'Ocurrió un error. Intenta nuevamente.')
       )
     } finally {
       setLoading(false)
@@ -76,11 +82,10 @@ export function AvailabilityNotifier({
         </div>
         <div className="flex-1">
           <h4 className="text-sm font-bold text-foreground">
-            Planear viaje a futuro
+            {t('notifier.title')}
           </h4>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            Los maestros artesanos abren su agenda hasta con 6 meses de anticipación.
-            Selecciona tu fecha en el calendario y déjanos tu correo para notificarte en cuanto abramos el cupo.
+            {t('notifier.desc')}
           </p>
 
           {!sent ? (
@@ -88,7 +93,7 @@ export function AvailabilityNotifier({
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="flex flex-col gap-1">
                   <label className="text-[11px] font-semibold text-muted-foreground">
-                    Fecha deseada en el futuro
+                    {t('notifier.dateLabel')}
                   </label>
                   <div className="relative">
                     <Calendar className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -104,14 +109,14 @@ export function AvailabilityNotifier({
 
                 <div className="flex flex-col gap-1">
                   <label className="text-[11px] font-semibold text-muted-foreground">
-                    Correo electrónico de contacto
+                    {t('notifier.emailLabel')}
                   </label>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="email"
                       required
-                      placeholder="tu@correo.com"
+                      placeholder={language === 'en' ? 'your@email.com' : 'tu@correo.com'}
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value)
@@ -126,7 +131,7 @@ export function AvailabilityNotifier({
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                 <p className="text-[11px] text-muted-foreground flex items-center gap-1">
                   <ShieldCheck className="size-3.5 text-leaf" />
-                  Atención directa y confirmación enviada a tu correo.
+                  {t('notifier.guarantee')}
                 </p>
 
                 <button
@@ -136,10 +141,10 @@ export function AvailabilityNotifier({
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="size-3.5 animate-spin" /> Guardando…
+                      <Loader2 className="size-3.5 animate-spin" /> {t('notifier.saving')}
                     </>
                   ) : (
-                    'Avisarme por correo'
+                    t('notifier.submit')
                   )}
                 </button>
               </div>
@@ -152,10 +157,12 @@ export function AvailabilityNotifier({
             <div className="mt-3 flex flex-col gap-1.5 rounded-xl bg-leaf/15 p-3 text-xs text-leaf">
               <div className="flex items-center gap-2 font-bold">
                 <Check className="size-4 shrink-0" />
-                <span>¡Solicitud registrada con éxito!</span>
+                <span>{t('notifier.successTitle')}</span>
               </div>
               <p className="text-[11px] leading-relaxed text-foreground/80">
-                Hemos enviado un correo a <strong>{email}</strong>. Te avisaremos con prioridad en cuanto se abra la agenda para <strong>{dateFormatted}</strong>.
+                {t('notifier.successDesc')
+                  .replace('{email}', email)
+                  .replace('{date}', dateFormatted)}
               </p>
             </div>
           )}

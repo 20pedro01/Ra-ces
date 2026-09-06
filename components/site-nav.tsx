@@ -6,16 +6,20 @@ import { Home, Compass, Backpack, Map, Leaf } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTrip } from '@/lib/trip-store'
 
-const LINKS = [
-  { href: '/', label: 'Inicio', icon: Home },
-  { href: '/explorar', label: 'Explorar', icon: Compass },
-  { href: '/paquetes', label: 'Paquetes', icon: Backpack },
-  { href: '/mi-viaje', label: 'Mi viaje', icon: Map },
-]
+import { useLanguage } from '@/lib/i18n/context'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 export function SiteNav() {
   const pathname = usePathname()
   const { totals } = useTrip()
+  const { t } = useLanguage()
+
+  const links = [
+    { href: '/', label: t('nav.home'), icon: Home },
+    { href: '/explorar', label: t('nav.explore'), icon: Compass },
+    { href: '/paquetes', label: t('nav.packages'), icon: Backpack },
+    { href: '/mi-viaje', label: t('nav.myTrip'), icon: Map },
+  ]
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
@@ -24,7 +28,7 @@ export function SiteNav() {
     <>
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2" aria-label="Raíces, inicio">
+          <Link href="/" className="flex items-center gap-2" aria-label="Raíces">
             <span className="flex size-9 items-center justify-center rounded-full bg-leaf text-leaf-foreground">
               <Leaf className="size-5" aria-hidden="true" />
             </span>
@@ -33,7 +37,7 @@ export function SiteNav() {
 
           <nav aria-label="Principal" className="hidden md:block">
             <ul className="flex items-center gap-1">
-              {LINKS.map(({ href, label, icon: Icon }) => {
+              {links.map(({ href, label, icon: Icon }) => {
                 const active = isActive(href)
                 return (
                   <li key={href}>
@@ -66,18 +70,20 @@ export function SiteNav() {
             </ul>
           </nav>
 
-          <Link
-            href="/mi-viaje"
-            className="flex h-10 items-center gap-2 rounded-full bg-earth px-4 text-sm font-semibold text-earth-foreground md:hidden"
-          >
-            <Map className="size-4" aria-hidden="true" />
-            Mi viaje
-            {totals.itemCount > 0 && (
-              <span className="flex size-5 items-center justify-center rounded-full bg-background text-xs font-bold text-foreground">
-                {totals.itemCount}
-              </span>
-            )}
-          </Link>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <Link
+              href="/mi-viaje"
+              className="flex h-10 items-center gap-2 rounded-full bg-earth px-4 text-sm font-semibold text-earth-foreground md:hidden"
+            >
+              <Map className="size-4" aria-hidden="true" />
+              {totals.itemCount > 0 && (
+                <span className="flex size-5 items-center justify-center rounded-full bg-background text-xs font-bold text-foreground">
+                  {totals.itemCount}
+                </span>
+              )}
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -87,7 +93,7 @@ export function SiteNav() {
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <ul className="grid grid-cols-4">
-          {LINKS.map(({ href, label, icon: Icon }) => {
+          {links.map(({ href, label, icon: Icon }) => {
             const active = isActive(href)
             return (
               <li key={href}>

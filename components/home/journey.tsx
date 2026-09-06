@@ -1,26 +1,37 @@
-import Image from 'next/image'
+'use client'
 
-const STEPS = ['Conversar', 'Descubrir', 'Elegir', 'Personalizar', 'Reservar', 'Vivir Yucatán']
+import Image from 'next/image'
+import { useLanguage } from '@/lib/i18n/context'
 
 export function Journey() {
+  const { t } = useLanguage()
+
+  const steps = [
+    t('home.journey.step1'),
+    t('home.journey.step2'),
+    t('home.journey.step3'),
+    t('home.journey.step4'),
+    t('home.journey.step5'),
+    t('home.journey.step6'),
+  ]
+
   return (
     <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
       <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
         <div className="flex flex-col gap-5">
           <h2 className="text-3xl font-semibold leading-tight text-balance md:text-4xl">
-            Un guía que conoce Yucatán y te ayuda a encontrar tu experiencia.
+            {t('home.journey.title')}
           </h2>
           <p className="text-lg leading-relaxed text-muted-foreground text-pretty">
-            No somos una agencia de tours. Te conectamos con familias, artesanos y productores
-            para que participes en su día a día: tejes, cocinas, cosechas, escuchas.
+            {t('home.journey.desc')}
           </p>
-          <ol className="flex flex-wrap items-center gap-2" aria-label="Cómo funciona">
-            {STEPS.map((step, i) => (
+          <ol className="flex flex-wrap items-center gap-2" aria-label={t('home.journey.title')}>
+            {steps.map((step, i) => (
               <li key={step} className="flex items-center gap-2">
                 <span className="rounded-full bg-sand px-3 py-1.5 text-sm font-bold text-foreground">
                   {step}
                 </span>
-                {i < STEPS.length - 1 && (
+                {i < steps.length - 1 && (
                   <span className="text-muted-foreground" aria-hidden="true">
                     →
                   </span>

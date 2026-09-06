@@ -31,10 +31,10 @@ export function getMaxFutureDateIso(monthsAhead = MAX_BOOKING_MONTHS_AHEAD): str
 /**
  * Devuelve una etiqueta amigable del mes máximo disponible (ej: "marzo de 2027").
  */
-export function getMaxFutureMonthLabel(monthsAhead = MAX_BOOKING_MONTHS_AHEAD): string {
+export function getMaxFutureMonthLabel(monthsAhead = MAX_BOOKING_MONTHS_AHEAD, locale: 'es' | 'en' = 'es'): string {
   const maxIso = getMaxFutureDateIso(monthsAhead)
   const date = new Date(`${maxIso}T12:00:00`)
-  const label = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' }).format(date)
+  const label = new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es-MX', { month: 'long', year: 'numeric' }).format(date)
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
@@ -51,13 +51,16 @@ export interface DateValidationResult {
  */
 export function validateDates(
   startDate?: string | null,
-  endDate?: string | null
+  endDate?: string | null,
+  locale: 'es' | 'en' = 'es'
 ): DateValidationResult {
+  const isEn = locale === 'en'
+
   if (!startDate || !startDate.trim()) {
-    return { isValid: false, error: 'Por favor ingresa la fecha de llegada.' }
+    return { isValid: false, error: isEn ? 'Please select your arrival date.' : 'Por favor ingresa la fecha de llegada.' }
   }
   if (!endDate || !endDate.trim()) {
-    return { isValid: false, error: 'Por favor ingresa la fecha de salida.' }
+    return { isValid: false, error: isEn ? 'Please select your departure date.' : 'Por favor ingresa la fecha de salida.' }
   }
 
   // Comprobar formato YYYY-MM-DD
@@ -65,7 +68,7 @@ export function validateDates(
   if (!isoRegex.test(startDate) || !isoRegex.test(endDate)) {
     return {
       isValid: false,
-      error: 'Formato de fecha inválido. Por favor selecciona una fecha válida.',
+      error: isEn ? 'Invalid date format. Please choose a valid date.' : 'Formato de fecha inválido. Por favor selecciona una fecha válida.',
     }
   }
 
@@ -77,7 +80,9 @@ export function validateDates(
     return {
       isValid: false,
       isPastIssue: true,
-      error: 'La fecha de llegada no puede ser una fecha pasada. Por favor elige una fecha a partir de hoy.',
+      error: isEn
+        ? 'Arrival date cannot be in the past. Please select a date from today onwards.'
+        : 'La fecha de llegada no puede ser una fecha pasada. Por favor elige una fecha a partir de hoy.',
     }
   }
 
@@ -86,7 +91,9 @@ export function validateDates(
     return {
       isValid: false,
       isPastIssue: true,
-      error: 'La fecha de salida no puede ser una fecha pasada.',
+      error: isEn
+        ? 'Departure date cannot be in the past.'
+        : 'La fecha de salida no puede ser una fecha pasada.',
     }
   }
 
@@ -95,7 +102,9 @@ export function validateDates(
     return {
       isValid: false,
       isOrderIssue: true,
-      error: 'La fecha de salida no puede ser anterior a la fecha de llegada.',
+      error: isEn
+        ? 'Departure date cannot be earlier than arrival date.'
+        : 'La fecha de salida no puede ser anterior a la fecha de llegada.',
     }
   }
 
@@ -104,7 +113,9 @@ export function validateDates(
     return {
       isValid: false,
       isFutureAvailabilityIssue: true,
-      error: `Aún no se cuenta con disponibilidad para esas fechas. Las reservaciones de talleres y experiencias solo se pueden programar con hasta ${MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para garantizar la disponibilidad y agenda de los maestros artesanos.`,
+      error: isEn
+        ? `We do not yet have availability for these dates. Artisan workshop bookings can only be scheduled up to ${MAX_BOOKING_MONTHS_AHEAD} months in advance to guarantee artisan schedules.`
+        : `Aún no se cuenta con disponibilidad para esas fechas. Las reservaciones de talleres y experiencias solo se pueden programar con hasta ${MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para garantizar la disponibilidad y agenda de los maestros artesanos.`,
     }
   }
 
@@ -115,7 +126,9 @@ export function validateDates(
   if (diffDays > MAX_TRIP_DAYS) {
     return {
       isValid: false,
-      error: `El itinerario no puede exceder ${MAX_TRIP_DAYS} días continuos. Por favor ajusta tus fechas.`,
+      error: isEn
+        ? `Itinerary cannot exceed ${MAX_TRIP_DAYS} continuous days. Please adjust your dates.`
+        : `El itinerario no puede exceder ${MAX_TRIP_DAYS} días continuos. Por favor ajusta tus fechas.`,
     }
   }
 
@@ -125,14 +138,16 @@ export function validateDates(
 /**
  * Valida una fecha individual (por ejemplo para paquetes o talleres específicos).
  */
-export function validateSingleDate(date?: string | null): DateValidationResult {
+export function validateSingleDate(date?: string | null, locale: 'es' | 'en' = 'es'): DateValidationResult {
+  const isEn = locale === 'en'
+
   if (!date || !date.trim()) {
-    return { isValid: false, error: 'Por favor selecciona una fecha.' }
+    return { isValid: false, error: isEn ? 'Please select a date.' : 'Por favor selecciona una fecha.' }
   }
 
   const isoRegex = /^\d{4}-\d{2}-\d{2}$/
   if (!isoRegex.test(date)) {
-    return { isValid: false, error: 'Formato de fecha inválido.' }
+    return { isValid: false, error: isEn ? 'Invalid date format.' : 'Formato de fecha inválido.' }
   }
 
   const today = getTodayIso()
@@ -142,7 +157,9 @@ export function validateSingleDate(date?: string | null): DateValidationResult {
     return {
       isValid: false,
       isPastIssue: true,
-      error: 'No es posible reservar en fechas pasadas. Por favor selecciona una fecha a partir de hoy.',
+      error: isEn
+        ? 'Booking for past dates is not possible. Please pick a date starting today.'
+        : 'No es posible reservar en fechas pasadas. Por favor selecciona una fecha a partir de hoy.',
     }
   }
 
@@ -150,7 +167,9 @@ export function validateSingleDate(date?: string | null): DateValidationResult {
     return {
       isValid: false,
       isFutureAvailabilityIssue: true,
-      error: `Aún no se cuenta con disponibilidad para esa fecha. Las reservaciones de talleres y experiencias solo se pueden programar con hasta ${MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para garantizar la disponibilidad de los artesanos.`,
+      error: isEn
+        ? `We do not yet have availability for this date. Bookings can only be scheduled up to ${MAX_BOOKING_MONTHS_AHEAD} months in advance to guarantee artisan schedules.`
+        : `Aún no se cuenta con disponibilidad para esa fecha. Las reservaciones de talleres y experiencias solo se pueden programar con hasta ${MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para garantizar la disponibilidad de los artesanos.`,
     }
   }
 
