@@ -11,11 +11,16 @@ import {
   Calendar,
   Check,
   Clock,
+  CreditCard,
   Info,
+  Landmark,
   Leaf,
   Loader2,
+  Lock,
   Package,
   Pencil,
+  ShieldCheck,
+  Sparkles,
   Truck,
   Users,
 } from 'lucide-react'
@@ -34,6 +39,7 @@ import {
 import { useTrip } from '@/lib/trip-store'
 import { useLanguage } from '@/lib/i18n/context'
 import { getLocalizedExperience, getLocalizedPackage } from '@/lib/i18n/data-translations'
+import { cn } from '@/lib/utils'
 
 export function BookingFlow() {
   const { state, totals, dispatch } = useTrip()
@@ -41,6 +47,13 @@ export function BookingFlow() {
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [contact, setContact] = useState({ name: '', email: '', phone: '' })
+
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'spei'>('card')
+  const [cardNumber, setCardNumber] = useState('')
+  const [cardName, setCardName] = useState('')
+  const [cardExpiry, setCardExpiry] = useState('')
+  const [cardCvc, setCardCvc] = useState('')
+  const [showValidationModal, setShowValidationModal] = useState(false)
 
   const [editingDates, setEditingDates] = useState(!state.startDate)
   const [startDateInput, setStartDateInput] = useState(state.startDate ?? '')
@@ -53,7 +66,14 @@ export function BookingFlow() {
   const empty = state.items.length === 0 && !pkg
 
   if (state.confirmed) {
-    return <Confirmation />
+    return (
+      <>
+        <Confirmation onReopenModal={() => setShowValidationModal(true)} />
+        {showValidationModal && (
+          <ValidationModal onClose={() => setShowValidationModal(false)} />
+        )}
+      </>
+    )
   }
 
   if (empty) {
@@ -90,6 +110,27 @@ export function BookingFlow() {
     setSubmitting(true)
     setErrorMsg(null)
     try {
+      // 1. Registrar intención de compra en el sistema de métricas
+      fetch('/api/metricas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          evento: 'intencion_compra',
+          metadata: {
+            total: totals.total,
+            method: paymentMethod,
+            people: state.people,
+            startDate: state.startDate,
+            endDate: state.endDate,
+            packageId: state.packageId,
+            itemsCount: state.items.length,
+            customerEmail: contact.email || null,
+            customerName: contact.name || null,
+          },
+        }),
+      }).catch((e) => console.warn('Error al enviar métrica de intención de compra:', e))
+
+      // 2. Procesar reservación
       const res = await fetch('/api/reservas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,6 +138,7 @@ export function BookingFlow() {
           state,
           totals,
           customer: contact,
+          paymentMethod,
         }),
       })
 
@@ -105,6 +147,7 @@ export function BookingFlow() {
         throw new Error(data.error || (language === 'en' ? 'An error occurred while processing the reservation' : 'Ocurrió un error al procesar la reservación'))
       }
 
+      setShowValidationModal(true)
       dispatch({ type: 'confirm', code: data.code })
     } catch (err: unknown) {
       console.error('Error al confirmar reservación:', err)
@@ -407,6 +450,153 @@ export function BookingFlow() {
           </div>
         </section>
 
+        {/* Sección de Método de Pago y Validación */}
+        <section aria-labelledby="payment-section" className="flex flex-col gap-4 border-t border-border pt-4">
+          <div className="flex items-center justify-between">
+            <h2 id="payment-section" className="text-sm font-bold text-muted-foreground">
+              {t('pay.methodTitle')}
+            </h2>
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-leaf">
+              <ShieldCheck className="size-3.5" />
+              {language === 'en' ? 'Verified validation' : 'Validación comunitaria'}
+            </span>
+          </div>
+
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => setPaymentMethod('card')}
+              className={cn(
+                'flex flex-col gap-1 rounded-2xl border-2 p-3.5 text-left transition-all',
+                paymentMethod === 'card'
+                  ? 'border-primary bg-primary/5 text-foreground shadow-sm'
+                  : 'border-border/80 bg-background/50 hover:border-border hover:bg-muted/30'
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-bold">
+                  <CreditCard className="size-4 text-primary" />
+                  {t('pay.card')}
+                </span>
+                <span className={cn('size-2.5 rounded-full', paymentMethod === 'card' ? 'bg-primary' : 'bg-border')} />
+              </div>
+              <span className="text-[11px] text-muted-foreground">{t('pay.cardSub')}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPaymentMethod('spei')}
+              className={cn(
+                'flex flex-col gap-1 rounded-2xl border-2 p-3.5 text-left transition-all',
+                paymentMethod === 'spei'
+                  ? 'border-primary bg-primary/5 text-foreground shadow-sm'
+                  : 'border-border/80 bg-background/50 hover:border-border hover:bg-muted/30'
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-bold">
+                  <Landmark className="size-4 text-earth" />
+                  {t('pay.spei')}
+                </span>
+                <span className={cn('size-2.5 rounded-full', paymentMethod === 'spei' ? 'bg-earth' : 'bg-border')} />
+              </div>
+              <span className="text-[11px] text-muted-foreground">{t('pay.speiSub')}</span>
+            </button>
+          </div>
+
+          {paymentMethod === 'card' ? (
+            <div className="flex flex-col gap-2.5 rounded-2xl border border-border/80 bg-muted/20 p-3.5">
+              <div>
+                <label className="text-[11px] font-semibold text-muted-foreground">
+                  {t('pay.cardNumber')}
+                </label>
+                <div className="relative mt-1">
+                  <CreditCard className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    maxLength={19}
+                    placeholder="4242 •••• •••• 4242"
+                    value={cardNumber}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, '').slice(0, 16)
+                      const formatted = v.match(/.{1,4}/g)?.join(' ') || v
+                      setCardNumber(formatted)
+                    }}
+                    className="h-10 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-xs font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div>
+                  <label className="text-[11px] font-semibold text-muted-foreground">
+                    {t('pay.cardName')}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={language === 'en' ? 'E.g. Sarah Jenkins' : 'Ej. Sofía Morales'}
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                    className="mt-1 h-10 w-full rounded-xl border border-border bg-background px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[11px] font-semibold text-muted-foreground">
+                      {t('pay.cardExpiry')}
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={5}
+                      placeholder="MM/AA"
+                      value={cardExpiry}
+                      onChange={(e) => {
+                        let v = e.target.value.replace(/\D/g, '').slice(0, 4)
+                        if (v.length > 2) v = `${v.slice(0, 2)}/${v.slice(2)}`
+                        setCardExpiry(v)
+                      }}
+                      className="mt-1 h-10 w-full rounded-xl border border-border bg-background px-2.5 text-center text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-muted-foreground">
+                      {t('pay.cardCvc')}
+                    </label>
+                    <input
+                      type="password"
+                      maxLength={4}
+                      placeholder="•••"
+                      value={cardCvc}
+                      onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                      className="mt-1 h-10 w-full rounded-xl border border-border bg-background px-2.5 text-center text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 rounded-2xl border border-border/80 bg-muted/20 p-3.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">{language === 'en' ? 'Bank / Institution' : 'Institución'}:</span>
+                <span className="font-semibold">STP / SPEI</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">CLABE:</span>
+                <span className="font-mono font-bold text-foreground">6461 8015 7000 0000 04</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">{language === 'en' ? 'Beneficiary' : 'Beneficiario'}:</span>
+                <span className="font-semibold">Viva Raíces · Turismo Comunitario</span>
+              </div>
+            </div>
+          )}
+
+          <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <Lock className="size-3.5 text-leaf" />
+            <span>{t('pay.guarantee')}</span>
+          </p>
+        </section>
+
         <dl className="flex flex-col gap-1.5 border-t border-border pt-4">
           <div className="flex justify-between text-sm">
             <dt className="text-muted-foreground">{t('trip.priceExperiences')}</dt>
@@ -444,15 +634,15 @@ export function BookingFlow() {
           type="button"
           onClick={confirm}
           disabled={submitting}
-          className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-leaf text-base font-bold text-leaf-foreground transition-all hover:bg-leaf/90 active:scale-[0.99] disabled:opacity-70"
+          className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-leaf text-base font-bold text-leaf-foreground transition-all hover:bg-leaf/90 active:scale-[0.99] disabled:opacity-70 shadow-md"
         >
           {submitting ? (
             <>
-              <Loader2 className="size-5 animate-spin" aria-hidden="true" /> {t('trip.confirming')}
+              <Loader2 className="size-5 animate-spin" aria-hidden="true" /> {t('pay.processing')}
             </>
           ) : (
             <>
-              <Check className="size-5" aria-hidden="true" /> {t('trip.confirmButton')}
+              <CreditCard className="size-5" aria-hidden="true" /> {t('pay.completeButton')} · {formatMXN(totals.total, language)}
             </>
           )}
         </button>
@@ -464,7 +654,59 @@ export function BookingFlow() {
   )
 }
 
-function Confirmation() {
+function ValidationModal({ onClose }: { onClose: () => void }) {
+  const { t, language } = useLanguage()
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+    >
+      <div className="relative flex w-full max-w-lg flex-col gap-5 rounded-[2rem] border border-leaf/40 bg-card p-6 shadow-2xl md:p-8">
+        <div className="flex items-start gap-4">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-leaf/20 text-leaf">
+            <ShieldCheck className="size-7" aria-hidden="true" />
+          </div>
+          <div className="flex-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-leaf">
+              {t('pay.validationModalTitle')}
+            </span>
+            <h2 className="mt-0.5 text-xl font-bold leading-snug text-foreground">
+              {t('pay.validationModalNoCharge')}
+            </h2>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-sand/60 p-4 text-xs leading-relaxed text-foreground/90 sm:text-sm">
+          <p>{t('pay.validationModalDesc')}</p>
+          <p className="font-semibold text-primary">
+            {t('pay.validationModalIntentSaved')}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between rounded-xl bg-muted/50 px-4 py-2.5 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5 font-medium">
+            <Sparkles className="size-4 text-amber-500" />
+            {language === 'en' ? 'Intent recorded successfully' : 'Intención registrada exitosamente'}
+          </span>
+          <span className="font-mono font-bold text-foreground">MVP Validated</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-md transition-all hover:bg-primary/90"
+        >
+          <Check className="size-4" />
+          {t('pay.validationModalGotIt')}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function Confirmation({ onReopenModal }: { onReopenModal?: () => void }) {
   const { state, totals, dispatch } = useTrip()
   const { t, language } = useLanguage()
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
@@ -482,6 +724,26 @@ function Confirmation() {
           </span>
           <h1 className="text-3xl font-semibold text-balance md:text-4xl">{t('confirm.heroTitle')}</h1>
         </div>
+      </div>
+
+      {/* Banner de Validación Transparente (Sin cobro) */}
+      <div className="flex w-full max-w-xl items-center justify-between gap-3 rounded-2xl border border-leaf/30 bg-leaf/10 p-3.5 text-left sm:p-4">
+        <div className="flex items-start gap-3">
+          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-leaf" />
+          <div className="flex flex-col gap-0.5 text-xs sm:text-sm">
+            <span className="font-bold text-leaf">{t('pay.validationModalNoCharge')}</span>
+            <span className="text-xs text-muted-foreground">{t('pay.validationModalIntentSaved')}</span>
+          </div>
+        </div>
+        {onReopenModal && (
+          <button
+            type="button"
+            onClick={onReopenModal}
+            className="shrink-0 text-xs font-bold text-primary hover:underline"
+          >
+            {language === 'en' ? 'Details' : 'Ver detalle'}
+          </button>
+        )}
       </div>
 
       <div className="flex max-w-lg flex-col gap-2">

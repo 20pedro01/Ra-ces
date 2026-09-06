@@ -43,6 +43,7 @@ export const viewport: Viewport = {
 }
 
 import { LanguageProvider } from '@/lib/i18n/context'
+import { VisitorTracker } from '@/components/visitor-tracker'
 
 export default function RootLayout({
   children,
@@ -54,6 +55,7 @@ export default function RootLayout({
       <body className="min-h-dvh antialiased">
         <LanguageProvider>
           <TripProvider>
+            <VisitorTracker />
             <SiteNav />
             <div className="pb-24 md:pb-0">{children}</div>
           </TripProvider>

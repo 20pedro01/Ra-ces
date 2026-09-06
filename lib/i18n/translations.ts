@@ -140,6 +140,25 @@ export const TRANSLATIONS = {
     'trip.summary.viewTrip': 'Ver mi viaje',
     'chat.intro': 'Perfecto, vamos a armar algo a tu medida. Te haré seis preguntas rápidas.',
 
+    // Payment & Field Validation
+    'pay.methodTitle': 'Método de pago',
+    'pay.card': 'Tarjeta de crédito o débito',
+    'pay.cardSub': 'Visa, Mastercard, American Express',
+    'pay.spei': 'Transferencia bancaria SPEI',
+    'pay.speiSub': 'Sin comisiones intermedias',
+    'pay.cardNumber': 'Número de tarjeta',
+    'pay.cardName': 'Nombre del titular',
+    'pay.cardExpiry': 'Vencimiento',
+    'pay.cardCvc': 'CVV',
+    'pay.completeButton': 'Completar pago',
+    'pay.processing': 'Procesando reservación…',
+    'pay.guarantee': 'Transacción protegida por validación comunitaria',
+    'pay.validationModalTitle': 'Validación Comunitaria en Curso',
+    'pay.validationModalNoCharge': '¡No se ha realizado ningún cobro a tu tarjeta!',
+    'pay.validationModalDesc': 'Viva Raíces está en etapa de validación de campo directamente con las cooperativas y artesanos mayas de Yucatán para garantizar un modelo justo y sin comisiones abusivas. Por el momento no se realizan cobros en línea.',
+    'pay.validationModalIntentSaved': 'Hemos registrado tu intención de compra y reservación con prioridad. Te enviaremos los detalles y confirmación a tu correo.',
+    'pay.validationModalGotIt': 'Entendido, ver confirmación',
+
     // Confirmation Screen
     'confirm.heroTitle': '¡Tu experiencia está lista!',
     'confirm.thanks': 'Gracias por elegir Raíces.',
@@ -312,6 +331,25 @@ export const TRANSLATIONS = {
     'trip.summary.forPeople': 'For {count} {people}. Simulated prices.',
     'trip.summary.viewTrip': 'View My Trip',
     'chat.intro': 'Perfect, let\'s craft something just for you. I\'ll ask you six quick questions.',
+
+    // Payment & Field Validation
+    'pay.methodTitle': 'Payment Method',
+    'pay.card': 'Credit or Debit Card',
+    'pay.cardSub': 'Visa, Mastercard, American Express',
+    'pay.spei': 'Bank Wire / SPEI',
+    'pay.speiSub': 'Direct transfer without extra fees',
+    'pay.cardNumber': 'Card number',
+    'pay.cardName': 'Cardholder name',
+    'pay.cardExpiry': 'Expiry date',
+    'pay.cardCvc': 'CVC',
+    'pay.completeButton': 'Complete Payment',
+    'pay.processing': 'Processing reservation…',
+    'pay.guarantee': 'Transaction protected by community validation',
+    'pay.validationModalTitle': 'Community Field Validation in Progress',
+    'pay.validationModalNoCharge': 'No charges have been made to your card!',
+    'pay.validationModalDesc': 'Viva Raíces is currently conducting field validation, partnering directly with Mayan artisan families and community cooperatives. To ensure a fair and ethical trade model without excessive intermediaries, official online payments will launch very soon.',
+    'pay.validationModalIntentSaved': 'We have successfully saved your purchase intent and confirmed priority placement. We will email you all trip details and arrival instructions.',
+    'pay.validationModalGotIt': 'Understood, view my confirmation',
 
     // Confirmation Screen
     'confirm.heroTitle': 'Your experience is ready!',
