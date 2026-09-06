@@ -26,9 +26,6 @@ export default function HomePage() {
 
         <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 pb-10 pt-12 md:gap-10 md:px-6 md:pb-16 md:pt-20">
           <div className="flex flex-col items-center gap-3 text-center text-primary-foreground">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary-foreground/85">
-              {t('home.tagline')}
-            </p>
             <h1 className="text-5xl font-semibold leading-none tracking-tight text-balance md:text-7xl">
               {t('home.title')}
             </h1>
