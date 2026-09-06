@@ -39,7 +39,7 @@ export default function MetricasEmbedPage() {
       <div className="flex items-center justify-between gap-2 pb-3 border-b border-neutral-800">
         <div>
           <h4 className="text-sm font-bold text-neutral-100 leading-tight">Métricas MVP</h4>
-          <span className="text-[10px] text-emerald-400 font-semibold tracking-wide uppercase">Validación de campo</span>
+          <span className="text-[10px] text-emerald-400 font-semibold tracking-wide">Validación de campo</span>
         </div>
         <button
           onClick={fetchMetricas}
