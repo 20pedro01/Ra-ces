@@ -50,75 +50,147 @@ export const EXPERIENCES_EN: Record<string, Partial<Experience>> = {
       'Woven mini-hammock sampler crafted by you',
       'Chilled regional drink and fruit snack',
     ],
-    artisanName: 'Doña Martha Poot',
-    artisanQuote: 'Each woven knot carries our family history and generations of Mayan patience.',
   },
   'taller-de-ceramica': {
-    name: 'Red Clay Pottery Workshop',
+    name: 'Mayan Red Clay Pottery Workshop',
     location: 'Ticul',
     short: 'Shape local clay into ancestral pots and Mayan whistles alongside Don Celso.',
     description:
-      'Visit the historic pottery town of Ticul. In Don Celso’s family studio, work with raw red clay extracted from regional soil, learn ancestral pinching and wheel techniques, and create your own ceramic piece.',
+      'Visit the historic pottery town of Ticul — the cradle of Yucatecan ceramics. Work with raw red clay, learn ancestral hand-pinching and wheel techniques, and fire your own ceramic piece.',
     includes: [
-      'Hands-on guidance from master potter Don Celso',
-      'Natural clay, sculpting tools, and kiln preparation',
-      'Your sculpted and fired ceramic piece',
-      'Option for home delivery once fired and cooled',
+      'Clay, tools, and kiln firing',
+      'Traditional drink included',
     ],
-    artisanName: 'Don Celso May',
-    artisanQuote: 'Clay has its own breath; we simply teach hands how to listen to the earth.',
   },
   'taller-de-talabarteria': {
     name: 'Artisanal Leathercraft Workshop',
-    location: 'Valladolid',
-    short: 'Design, bevel, and stitch your own genuine leather souvenir in Valladolid.',
+    location: 'Mérida, Santiago District',
+    short: 'Design, bevel, and stitch your own genuine leather souvenir in Mérida.',
     description:
-      'Step inside Don Fernando’s traditional leather shop. Master the ancient leatherworking craft: cutting, edging, hand-stitching, and stamping custom motifs into fine regional leather.',
+      "Step inside Don Rafael's traditional leather shop — 40 years of craft. Master the ancient leatherworking craft: cutting, perforating, hand-stitching, and stamping your initials into fine regional leather.",
     includes: [
-      'Masterclass with craftsman Don Fernando',
-      'Premium leather hide, beveling irons, and waxed threads',
-      'Handmade leather cardholder or passport wallet made by you',
+      'Leather hide, tools, and rivets',
+      'Personalized initial stamping',
     ],
-    artisanName: 'Don Fernando Canché',
-    artisanQuote: 'Leather shaped by hand endures for decades, growing more beautiful with every journey.',
   },
-  'abejas-meliponas': {
+  'taller-de-punto-de-cruz': {
+    name: 'Traditional Cross-Stitch Embroidery Workshop',
+    location: 'Maní',
+    short: 'Embroider traditional floral patterns with the women of Maní and discover the meaning behind each design.',
+    description:
+      "In the shade of a community courtyard in Maní, a group of embroiderers teaches you to read the patterns and stitch your first floral design. While you embroider, you hear stories of the village and the huipil garment's cultural significance.",
+    includes: [
+      'Embroidery hoop, fabric, and threads',
+      'Fresh fruit drink',
+      'Access to the community courtyard',
+    ],
+  },
+  'clase-de-antojitos': {
+    name: 'Yucatecan Street Snacks Cooking Class',
+    location: 'Mérida, Santa Ana District',
+    short: 'Make panuchos, salbutes, and papadzules from scratch in a local Mérida family kitchen.',
+    description:
+      "You start at the market choosing fresh ingredients and finish at a long table eating what you cooked. You press the tortillas, you fry them, you plate the dish. Learn the difference between a panucho and a salbute, and why pickled red onion always goes with habanero.",
+    includes: [
+      'Market walk to select ingredients',
+      'All ingredients included',
+      'Full meal and handwritten recipe booklet',
+    ],
+  },
+  'taller-de-recados': {
+    name: 'Yucatecan Spice Paste (Recado) Workshop',
+    location: 'Espita',
+    short: 'Toast, grind, and blend the spices behind the red and black recados — the soul of Yucatecan cooking.',
+    description:
+      'Espita is home to the most celebrated recados in eastern Yucatán. Learn to toast achiote, chiles, and spices on a comal, grind them on a stone mill, and form your own spice paste jars to take home.',
+    includes: [
+      'Spices, achiote, and grinding tools',
+      'Jars of your own recado to take home',
+      'Cochinita pibil tasting',
+    ],
+  },
+  'cenotes-de-homun': {
+    name: 'Homún Cenote Trail by Mototaxi',
+    location: 'Homún',
+    short: 'Explore three distinct cenotes by mototaxi with a community guide from Homún.',
+    description:
+      'The cenotes of Homún are managed by local families. A community guide takes you by mototaxi to three cenotes with different characters: one open-air, one semi-open, and one cavern. You swim, rest, and eat a home-cooked meal with a local family.',
+    includes: [
+      'Mototaxi and community guide',
+      'Access to 3 cenotes',
+      'Life jacket and home-cooked meal',
+    ],
+  },
+  'cenote-caverna-al-amanecer': {
+    name: 'Cavern Cenote at Sunrise',
+    location: 'Cuzamá',
+    short: 'Descend into a crystal-clear cavern cenote before the crowds and experience it in complete silence.',
+    description:
+      'Entering the cenote at first light — when the sunbeam barely touches the water — is an entirely different experience. A local guide accompanies you to the cavern and shares what this sacred place means to their community.',
+    includes: [
+      'Private early-access entry',
+      'Local guide',
+      'Coffee and traditional sweet bread',
+    ],
+  },
+  'ruta-abejas-meliponas': {
     name: 'Melipona Native Stingless Bee Sanctuary',
     location: 'Maní',
     short: 'Discover sacred Mayan stingless bees, ancestral wooden jobones, and medicinal honey.',
     description:
-      'A gentle, family-friendly encounter in the magical town of Maní. Walk among medicinal gardens and hollowed-log hives (jobones) where sacred melipona bees produce liquid gold without stinging.',
+      'The Xunán Kab is a stingless bee that the Maya have tended for centuries. Visit a family meliponary in Maní, help inspect the log hives (jobones), learn how the honey is harvested, and taste it alongside artisanal products made from it.',
     includes: [
-      'Guided educational walk in the meliponary',
-      'Tasting of pure medicinal melipona honey',
-      'Jar of artisanal honey to take home',
-      'Traditional tea and honey snack',
+      'Guided visit to the meliponary',
+      'Guided honey harvest',
+      'Honey and product tasting',
     ],
   },
-  'cenote-y-comida-maya': {
-    name: 'Sacred Cenote Swim & Home-Cooked Maya Feast',
-    location: 'Homún',
-    short: 'Swim in pristine cave waters and taste slow-cooked cochinita pibil in an authentic home.',
-    description:
-      'Escape mass commercial parks. Visit a community-protected cenote in Homún with clear turquoise waters, followed by an underground earth-oven (píib) feast prepared by a local Maya family.',
-    includes: [
-      'Access to private community cenote',
-      'Life jacket and equipment',
-      'Complete home-cooked traditional meal with handmade corn tortillas',
-      'Fresh fruit waters and regional dessert',
-    ],
-  },
-  'cocina-con-leña': {
-    name: 'Traditional Wood-Fired Maya Cooking Masterclass',
+  'sendero-de-plantas-medicinales': {
+    name: 'Medicinal Plant Trail',
     location: 'Yaxunah',
-    short: 'Make handmade tortillas, crush achiote, and cook cochinita pibil in an earthen pit.',
+    short: 'Walk the lowland jungle with a Maya guide who shares the plants that heal and nourish.',
     description:
-      'Spend a morning in the heart of Yaxunah with a women’s culinary collective. Grind your own spices with limestone metates and prepare authentic regional stews over open wood fires.',
+      'A slow walk along the trails of Yaxunah, learning to recognize plants the community uses to heal, cook, and build. Ends with a dip in the village cenote.',
     includes: [
-      'Cooking class guided by village cooks',
-      'All farm-fresh ingredients and spices',
-      'Full family feast with everything prepared during class',
-      'Handwritten recipe booklet',
+      'Community guide',
+      'Cenote swim included',
+      'Herbal infusion tasting',
+    ],
+  },
+  'flamencos-en-celestun': {
+    name: 'Flamingos & Mangrove in Celestún',
+    location: 'Celestún',
+    short: 'Navigate the estuary with local fishermen to observe flamingos and the freshwater spring hidden in the mangrove.',
+    description:
+      "The boatmen of Celestún know the estuary better than anyone. With them you observe flamingos at a respectful distance, navigate the mangrove tunnel, and swim in a natural freshwater spring.",
+    includes: [
+      'Boat with local captain',
+      'Life jackets',
+      "Ceviche from the fishermen's cooperative",
+    ],
+  },
+  'fogata-de-leyendas': {
+    name: 'Bonfire of Local Legends',
+    location: 'Yaxunah',
+    short: 'Around the fire, community members share legends, stories, and traditions of Yucatán.',
+    description:
+      'When night falls, the community lights the bonfire. Hot chocolate is served and the elders share stories of the Aluxes, the Xtabay, and the Huay Chivo. No stage, no microphones — just the fire, the voices, and the sky.',
+    includes: [
+      'Hot chocolate and traditional bread',
+      'Community storytellers',
+      'English interpretation available',
+    ],
+  },
+  'noche-de-vaqueria': {
+    name: 'Vaquería Night at the Town Square',
+    location: 'Motul',
+    short: 'Experience a traditional vaquería with jarana dance, embroidered ternos, and a dinner of huevos motuleños.',
+    description:
+      'The square in Motul fills with jarana music. Learn the basic steps with a local dance group, listen to Yucatecan bombas (rhyming jokes), and enjoy the original huevos motuleños for dinner.',
+    includes: [
+      'Jarana dance lesson',
+      'Traditional dinner',
+      'Reserved seating',
     ],
   },
 }
@@ -128,59 +200,80 @@ export const PACKAGES_EN: Record<string, Partial<TourPackage>> = {
     name: 'Sacred Melipona Bee & Maya Heritage Trail',
     location: 'Maní & Southern Yucatán',
     durationLabel: 'Full Day (8 hrs)',
+    tagline: 'A day with the guardians of Mayan honey',
     short: 'Connect with sacred stingless bees, historic convents, and organic artisan honey.',
     description:
       'A soul-stirring journey through the peaceful southern towns of Yucatán. Visit family-run melipona sanctuaries in Maní, taste medicinal honeys, explore 16th-century architecture, and share lunch with local beekeepers.',
-    includes: [
-      'Guided visit to traditional meliponary in Maní',
-      'Tasting of 3 varieties of ancestral honey',
-      'Traditional 3-course regional lunch',
-      'Optional round-trip transportation from your hotel',
+    activities: [
+      'Welcome in the community of Maní',
+      'Visit to the family meliponary and introduction to the Xunán Kab bee',
+      'Explanation of melipona bee care and life cycle',
+      'Guided honey harvest from traditional log hives (jobones)',
+      'Workshop with producers: making honey balm',
+      'Tasting of honey, pox, and artisanal community products',
     ],
+    includes: [
+      'Bilingual community guide',
+      'Traditional home-cooked family lunch',
+      'Jar of melipona honey and balm',
+      'Direct contribution to the cooperative',
+    ],
+    bring: ['Comfortable, light-colored clothing', 'Hat and sunscreen', 'Reusable water bottle', 'Natural insect repellent'],
   },
   'cenotes-y-leyendas': {
-    name: 'Sacred Cenotes & Ancestral Legends',
-    location: 'Homún & Cuzamá',
-    durationLabel: 'Full Day (7 hrs)',
-    short: 'Hidden cavern cenotes, ancient folklore, and swimming in crystal turquoise waters.',
+    name: 'Cenotes & Legends of Yaxunah',
+    location: 'Yaxunah, Eastern Yucatán',
+    durationLabel: 'Full Day (afternoon & night)',
+    tagline: 'From crystal waters to the fire of night',
+    short: 'Medicinal plant trail, hidden cenote swim, and a bonfire of ancestral legends.',
     description:
-      'Immerse in the underworld of the Maya. Discover hidden cenotes guarded by local ejido communities, swim in luminous subterranean caverns, and hear oral legends passed down through generations.',
-    includes: [
-      'Access to 3 community-protected cenotes',
-      'Life jackets and swimming gear',
-      'Local Maya storyteller guide',
-      'Full traditional Yucatecan meal',
-      'Optional round-trip transportation',
+      'A full day in the community of Yaxunah: walk the lowland jungle with a Maya guide, swim in the village cenote, and close the day around a bonfire listening to legends told by community members.',
+    activities: [
+      'Medicinal plant trail with community guide',
+      'Swim in Lol-Ha cenote',
+      'Dinner at a local family home',
+      'Bonfire of local legends',
     ],
+    includes: [
+      'Community guide',
+      'Traditional dinner',
+      'Hot chocolate and bread',
+      'English interpretation available',
+    ],
+    bring: ['Swimsuit and towel', 'Long-sleeved shirt for the evening', 'Small flashlight'],
   },
   'sabores-de-yucatan': {
     name: 'Flavors of Yucatán Culinary Expedition',
-    location: 'Mérida & Yaxunah',
-    durationLabel: 'Full Day (8.5 hrs)',
-    short: 'Local market discovery, smoke-pit cooking, recados, and artisanal tortillas.',
+    location: 'Mérida',
+    durationLabel: 'Full Day (6 hrs)',
+    tagline: 'From market to table, with your own hands',
+    short: 'Local market discovery, spice grinding, and authentic Yucatecan cooking.',
     description:
-      'A true gastronomic journey for food lovers. Tour traditional markets, select fresh herbs and citrus, grind achiote on a stone metate, and unearth slow-roasted cochinita pibil alongside local culinary masters.',
-    includes: [
-      'Guided culinary market walk',
-      'Hands-on traditional cooking workshop',
-      'Abundant lunch feast with your culinary creations',
-      'Regional beverages and artisanal desserts',
+      'A gastronomic journey where you participate in everything: choose ingredients at the market, grind your own recado spice paste, and prepare regional snacks with a Mérida family.',
+    activities: [
+      'Tour of the Santa Ana Market',
+      'Making red recado spice paste',
+      'Cooking class: panuchos, salbutes, and papadzules',
+      'Shared meal and recipe booklet',
     ],
+    includes: ['All ingredients', 'Full meal', 'Jar of homemade recado', 'Printed recipe booklet'],
+    bring: ["Good appetite", "Clothes you don't mind getting dirty", 'Notebook if you like to take notes'],
   },
   'manos-artesanas': {
     name: 'Artisan Hands Workshop Immersion',
-    location: 'Tixkokob & Ticul',
-    durationLabel: 'Full Day (9 hrs)',
-    short: 'Loom-woven hammocks and red clay ceramics guided by multi-generational masters.',
+    location: 'Tixkokob & Mérida',
+    durationLabel: 'Full Day (6 hrs)',
+    tagline: 'Two workshops, two living crafts',
+    short: 'Loom-woven hammocks in the morning and leathercraft in the afternoon.',
     description:
-      'An intimate hands-on journey through two legendary craft villages. Weave with master hammock artisans in Tixkokob in the morning, and sculpt red clay pottery in Ticul in the afternoon.',
-    includes: [
-      'Two complete hands-on artisan workshops (hammocks & ceramics)',
-      'All craft materials and tools provided',
-      'Your handcrafted piece and loom sampler to take home',
-      'Home-cooked lunch with artisan hosts',
-      'Optional round-trip transportation',
+      'Spend the day among artisans: weave the first stretches of a hammock in Tixkokob in the morning, then work leather with a craftsman from Mérida in the afternoon.',
+    activities: [
+      'Hammock workshop with the Canul family',
+      'Lunch in Tixkokob',
+      'Leathercraft workshop in Santiago District',
     ],
+    includes: ['Materials for both workshops', 'Regional lunch', 'Personalized leather piece'],
+    bring: ['Comfortable clothing', 'Patience and eagerness to learn'],
   },
 }
 
@@ -196,8 +289,6 @@ export function getLocalizedExperience(exp: Experience, locale: Locale): Experie
     description: translation.description || exp.description,
     location: translation.location || exp.location,
     includes: translation.includes || exp.includes,
-    artisanName: translation.artisanName || exp.artisanName,
-    artisanQuote: translation.artisanQuote || exp.artisanQuote,
   }
 }
 
@@ -209,11 +300,14 @@ export function getLocalizedPackage(pkg: TourPackage, locale: Locale): TourPacka
     ...pkg,
     ...translation,
     name: translation.name || pkg.name,
+    tagline: translation.tagline || pkg.tagline,
     short: translation.short || pkg.short,
     description: translation.description || pkg.description,
     durationLabel: translation.durationLabel || pkg.durationLabel,
     location: translation.location || pkg.location,
     includes: translation.includes || pkg.includes,
+    activities: translation.activities || pkg.activities,
+    bring: translation.bring || pkg.bring,
   }
 }
 
