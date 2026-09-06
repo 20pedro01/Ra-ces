@@ -1,8 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-const rawUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim()
+const DEFAULT_SUPABASE_URL = 'https://dgzlrdxxeofyfaradrat.supabase.co'
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_tR4GngidXPXNU2ShlKhvSA_N5tL55H3'
+
+const rawUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL).trim()
 const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '')
-const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim()
+const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY).trim()
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
