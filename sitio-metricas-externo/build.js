@@ -64,7 +64,6 @@ async function build() {
   const htmlCompilado = template
     .replace(/\{\{VISITANTES\}\}/g, visitantes)
     .replace(/\{\{INTENCION_COMPRA\}\}/g, intencionCompra)
-    .replace(/\{\{CONVERSION\}\}/g, conversion)
     .replace(/\{\{FECHA_ACTUALIZACION\}\}/g, fechaTexto);
 
   // Escribir index.html
@@ -72,7 +71,6 @@ async function build() {
   console.log(`🎉 index.html generado con éxito con datos estáticos:`);
   console.log(`   - Visitantes: ${visitantes}`);
   console.log(`   - Intención de Compra: ${intencionCompra}`);
-  console.log(`   - Conversión: ${conversion}`);
   console.log(`   - Fecha: ${fechaTexto}`);
 }
 

@@ -94,7 +94,9 @@ async function cargarMetricas() {
     // Actualizar datos
     animateValue(elVisitantes, prevVisitantes, data.visitantes ?? 0);
     animateValue(elCompras, prevCompras, data.intencion_compra ?? 0);
-    elConversion.textContent = data.tasa_conversion || '0%';
+    if (elConversion) {
+      elConversion.textContent = data.tasa_conversion || '0%';
+    }
 
     // Registrar hora
     const now = new Date();
