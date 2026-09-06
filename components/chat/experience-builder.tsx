@@ -33,22 +33,16 @@ import {
 import { recommend } from '@/lib/recommend'
 import { useTrip } from '@/lib/trip-store'
 import { cn } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n/context'
+import { getLocalizedCategory, getLocalizedZone, getLocalizedBudget } from '@/lib/i18n/data-translations'
 
 type Step = 'dates' | 'people' | 'lodging' | 'budget' | 'categories' | 'transport' | 'results'
 
 const ORDER: Step[] = ['dates', 'people', 'lodging', 'budget', 'categories', 'transport', 'results']
 
-const QUESTIONS: Record<Exclude<Step, 'results'>, string> = {
-  dates: '¿Cuándo visitarás Yucatán?',
-  people: '¿Cuántas personas viajarán contigo?',
-  lodging: '¿Dónde te hospedarás?',
-  budget: '¿Cuál es tu presupuesto aproximado?',
-  categories: '¿Qué te gustaría vivir?',
-  transport: '¿Cuentas con transporte?',
-}
-
 export function ExperienceBuilder() {
   const { state, dispatch } = useTrip()
+  const { t, language } = useLanguage()
   const hasAnswers = state.startDate && state.budget && state.needsTransport !== null
   const [step, setStep] = useState<Step>(hasAnswers ? 'results' : 'dates')
   const [typing, setTyping] = useState(true)
@@ -65,10 +59,19 @@ export function ExperienceBuilder() {
 
   const stepIndex = ORDER.indexOf(step)
 
+  const QUESTIONS: Record<Exclude<Step, 'results'>, string> = {
+    dates: t('chat.question.dates'),
+    people: t('chat.question.people'),
+    lodging: t('chat.question.lodging'),
+    budget: t('chat.question.budget'),
+    categories: t('chat.question.categories'),
+    transport: t('chat.question.transport'),
+  }
+
   useEffect(() => {
     setTyping(true)
-    const t = setTimeout(() => setTyping(false), step === 'results' ? 900 : 550)
-    return () => clearTimeout(t)
+    const timer = setTimeout(() => setTyping(false), step === 'results' ? 900 : 550)
+    return () => clearTimeout(timer)
   }, [step])
 
   useEffect(() => {
@@ -85,23 +88,36 @@ export function ExperienceBuilder() {
   const answers = {
     dates: state.startDate
       ? state.startDate === state.endDate
-        ? formatDate(state.startDate)
-        : `Del ${formatDateShort(state.startDate)} al ${formatDateShort(state.endDate ?? state.startDate)}`
+        ? formatDate(state.startDate, language)
+        : language === 'en'
+          ? `From ${formatDateShort(state.startDate, language)} to ${formatDateShort(state.endDate ?? state.startDate, language)}`
+          : `Del ${formatDateShort(state.startDate, language)} al ${formatDateShort(state.endDate ?? state.startDate, language)}`
       : null,
-    people: `${state.people} ${state.people === 1 ? 'persona' : 'personas'}`,
+    people: `${state.people} ${state.people === 1 ? t('chat.people.labelSingle') : t('chat.people.label')}`,
     lodging: state.zone
-      ? `${ZONES.find((z) => z.id === state.zone)?.name}${state.lodging ? ` · ${state.lodging}` : ''}`
+      ? (() => {
+          const z = ZONES.find((z) => z.id === state.zone)
+          const locZ = z ? getLocalizedZone(z, language) : null
+          return `${locZ?.name ?? ''}${state.lodging ? ` · ${state.lodging}` : ''}`
+        })()
       : null,
-    budget: state.budget ? BUDGETS.find((b) => b.id === state.budget)?.range : null,
+    budget: state.budget
+      ? getLocalizedBudget(BUDGETS.find((b) => b.id === state.budget)!, language)?.range
+      : null,
     categories: state.categories.length
-      ? state.categories.map((c) => CATEGORIES.find((x) => x.id === c)?.name).join(', ')
+      ? state.categories
+          .map((c) => {
+            const cat = CATEGORIES.find((x) => x.id === c)
+            return cat ? getLocalizedCategory(cat, language).name : ''
+          })
+          .join(', ')
       : null,
     transport:
       state.needsTransport === null
         ? null
         : state.needsTransport
-          ? 'No, necesito transporte'
-          : 'Sí, cuento con transporte',
+          ? t('chat.transport.no')
+          : t('chat.transport.yes'),
   }
 
   const restart = () => {
@@ -114,14 +130,18 @@ export function ExperienceBuilder() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-      <section aria-label="Conversación con tu guía" className="flex flex-col gap-4">
+      <section aria-label={language === 'en' ? 'Chat with your guide' : 'Conversación con tu guía'} className="flex flex-col gap-4">
         <header className="flex items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-3xl font-semibold leading-tight md:text-4xl">Armar mi experiencia</h1>
-            <p className="text-muted-foreground">Responde con calma. Puedes cambiar cualquier respuesta.</p>
+            <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
+              {language === 'en' ? 'Design My Experience' : 'Armar mi experiencia'}
+            </h1>
+            <p className="text-muted-foreground">
+              {language === 'en' ? 'Take your time. You can change any answer.' : 'Responde con calma. Puedes cambiar cualquier respuesta.'}
+            </p>
           </div>
           <ol
-            aria-label={`Paso ${Math.min(stepIndex + 1, 6)} de 6`}
+            aria-label={language === 'en' ? `Step ${Math.min(stepIndex + 1, 6)} of 6` : `Paso ${Math.min(stepIndex + 1, 6)} de 6`}
             className="hidden items-center gap-1.5 sm:flex"
           >
             {ORDER.slice(0, 6).map((s, i) => (
@@ -138,7 +158,10 @@ export function ExperienceBuilder() {
 
         <div className="flex flex-col gap-4 rounded-[2rem] bg-sand/70 p-4 md:p-6">
           <GuideBubble>
-            <p>Perfecto, vamos a armar algo a tu medida. Te haré seis preguntas rápidas.</p>
+            <p>{language === 'en'
+              ? 'Perfect, let\'s craft something just for you. I\'ll ask you six quick questions.'
+              : 'Perfecto, vamos a armar algo a tu medida. Te haré seis preguntas rápidas.'}
+            </p>
           </GuideBubble>
 
           {ORDER.slice(0, stepIndex).map((s) => {
@@ -154,7 +177,7 @@ export function ExperienceBuilder() {
                     type="button"
                     onClick={() => setStep(s)}
                     className="inline-flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-card hover:text-foreground"
-                    aria-label={`Editar respuesta: ${QUESTIONS[s]}`}
+                    aria-label={`${language === 'en' ? 'Edit answer' : 'Editar respuesta'}: ${QUESTIONS[s]}`}
                   >
                     <Pencil className="size-3.5" />
                   </button>
@@ -168,9 +191,7 @@ export function ExperienceBuilder() {
             <TypingBubble />
           ) : step === 'results' ? (
             <GuideBubble>
-              <p>
-                Perfecto. Basándome en tus preferencias, encontré estas experiencias para ti:
-              </p>
+              <p>{t('chat.question.results')}</p>
             </GuideBubble>
           ) : (
             <GuideBubble>
@@ -184,7 +205,7 @@ export function ExperienceBuilder() {
                 <>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label className="flex flex-col gap-1.5 text-sm font-bold">
-                      Llegada
+                      {t('chat.dates.arrival')}
                       <input
                         type="date"
                         value={startDate}
@@ -203,7 +224,7 @@ export function ExperienceBuilder() {
                       />
                     </label>
                     <label className="flex flex-col gap-1.5 text-sm font-bold">
-                      Salida
+                      {t('chat.dates.departure')}
                       <input
                         type="date"
                         value={endDate}
@@ -225,8 +246,12 @@ export function ExperienceBuilder() {
                     <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
                       <Clock className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
                       <div>
-                        <span className="font-bold">Viaje en las próximas 48 horas:</span>{' '}
-                        Los artesanos preparan materiales frescos con anticipación. Al confirmar tu itinerario, coordinaremos de inmediato para asegurar tu espacio.
+                        <span className="font-bold">
+                          {language === 'en' ? 'Trip within the next 48 hours:' : 'Viaje en las próximas 48 horas:'}
+                        </span>{' '}
+                        {language === 'en'
+                          ? 'Local artisans prepare fresh supplies in advance. Once confirmed, we will coordinate immediately to secure your spot.'
+                          : 'Los artesanos preparan materiales frescos con anticipación. Al confirmar tu itinerario, coordinaremos de inmediato para asegurar tu espacio.'}
                       </div>
                     </div>
                   )}
@@ -245,14 +270,14 @@ export function ExperienceBuilder() {
                     <AvailabilityNotifier
                       targetDate={startDate}
                       allowCustomDate
-                      experienceOrPackage="Itinerario general"
+                      experienceOrPackage={language === 'en' ? 'General Itinerary' : 'Itinerario general'}
                     />
                   )}
 
                   <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-muted/30 p-3 text-xs">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="text-muted-foreground">
-                        📅 Calendario abierto hasta <strong className="text-foreground">{getMaxFutureMonthLabel()}</strong>.
+                        {t('chat.dates.calendarOpen')} <strong className="text-foreground">{getMaxFutureMonthLabel(MAX_BOOKING_MONTHS_AHEAD, language)}</strong>.
                       </span>
                       <button
                         type="button"
@@ -260,7 +285,7 @@ export function ExperienceBuilder() {
                         className="inline-flex items-center gap-1 font-bold text-primary hover:underline"
                       >
                         <Bell className="size-3.5" />
-                        {showFutureWaitlist ? 'Cerrar aviso' : '¿Viajas después? Avísame por correo'}
+                        {showFutureWaitlist ? t('chat.dates.closeWaitlist') : t('chat.dates.futureQuestion')}
                       </button>
                     </div>
 
@@ -268,15 +293,16 @@ export function ExperienceBuilder() {
                       <AvailabilityNotifier
                         targetDate={null}
                         allowCustomDate
-                        experienceOrPackage="Itinerario personalizado"
+                        experienceOrPackage={language === 'en' ? 'Custom Itinerary' : 'Itinerario personalizado'}
                         className="mt-1"
                       />
                     )}
                   </div>
 
                   <NextButton
+                    label={language === 'en' ? 'Continue' : 'Continuar'}
                     onClick={() => {
-                      const validation = validateDates(startDate, endDate)
+                      const validation = validateDates(startDate, endDate, language)
                       if (!validation.isValid) {
                         setDateError(validation.error)
                         setFutureIssue(Boolean(validation.isFutureAvailabilityIssue))
@@ -296,7 +322,7 @@ export function ExperienceBuilder() {
                   <div className="flex items-center justify-center gap-5 py-2">
                     <button
                       type="button"
-                      aria-label="Menos personas"
+                      aria-label={t('chat.people.less')}
                       onClick={() => dispatch({ type: 'setPeople', people: state.people - 1 })}
                       disabled={state.people <= 1}
                       className="flex size-14 items-center justify-center rounded-full border-2 border-border bg-background text-foreground disabled:opacity-40"
@@ -308,7 +334,7 @@ export function ExperienceBuilder() {
                     </output>
                     <button
                       type="button"
-                      aria-label="Más personas"
+                      aria-label={t('chat.people.more')}
                       onClick={() => dispatch({ type: 'setPeople', people: state.people + 1 })}
                       disabled={state.people >= 12}
                       className="flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-40"
@@ -317,33 +343,42 @@ export function ExperienceBuilder() {
                     </button>
                   </div>
                   <p className="text-center text-sm text-muted-foreground">
-                    {state.people === 1 ? 'Viajas solo o sola' : `${state.people} personas en total, contándote`}
+                    {state.people === 1
+                      ? (language === 'en' ? 'Traveling solo' : 'Viajas solo o sola')
+                      : language === 'en'
+                        ? `${state.people} guests total`
+                        : `${state.people} personas en total, contándote`}
                   </p>
-                  <NextButton onClick={next} />
+                  <NextButton label={language === 'en' ? 'Continue' : 'Continuar'} onClick={next} />
                 </>
               )}
 
               {step === 'lodging' && (
                 <>
                   <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    1. Elige la zona de Yucatán:
+                    {language === 'en' ? '1. Choose your Yucatán area:' : '1. Elige la zona de Yucatán:'}
                   </p>
                   <div className="grid gap-2 sm:grid-cols-2">
-                    {ZONES.map((z) => (
-                      <OptionButton
-                        key={z.id}
-                        selected={zone === z.id}
-                        onClick={() => setZone(z.id)}
-                        title={z.name}
-                        description={z.hint}
-                      />
-                    ))}
+                    {ZONES.map((z) => {
+                      const locZ = getLocalizedZone(z, language)
+                      return (
+                        <OptionButton
+                          key={z.id}
+                          selected={zone === z.id}
+                          onClick={() => setZone(z.id)}
+                          title={locZ.name}
+                          description={locZ.hint}
+                        />
+                      )
+                    })}
                   </div>
 
                   <label className="flex flex-col gap-1.5 text-sm font-bold">
                     <span className="flex items-center justify-between">
-                      <span>2. Hotel, colonia o pueblo</span>
-                      <span className="text-xs font-normal text-muted-foreground">(opcional)</span>
+                      <span>{language === 'en' ? '2. Hotel, neighborhood, or town' : '2. Hotel, colonia o pueblo'}</span>
+                      <span className="text-xs font-normal text-muted-foreground">
+                        ({language === 'en' ? 'optional' : 'opcional'})
+                      </span>
                     </span>
                     <input
                       type="text"
@@ -357,18 +392,21 @@ export function ExperienceBuilder() {
                           next()
                         }
                       }}
-                      placeholder="Ej. Hotel en el Centro de Mérida"
+                      placeholder={language === 'en' ? 'E.g. Hotel in Downtown Mérida' : 'Ej. Hotel en el Centro de Mérida'}
                       className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40"
                     />
                   </label>
 
                   {!zone && !lodging.trim() && (
                     <p className="text-xs text-muted-foreground">
-                      💡 Elige una zona arriba para recomendarte experiencias cercanas (si no estás seguro, puedes elegir Mérida).
+                      {language === 'en'
+                        ? '💡 Select an area above to get nearby recommendations (if unsure, choose Mérida).'
+                        : '💡 Elige una zona arriba para recomendarte experiencias cercanas (si no estás seguro, puedes elegir Mérida).'}
                     </p>
                   )}
 
                   <NextButton
+                    label={language === 'en' ? 'Continue' : 'Continuar'}
                     disabled={!zone && !lodging.trim()}
                     onClick={() => {
                       const finalZone = zone || 'merida'
@@ -382,41 +420,50 @@ export function ExperienceBuilder() {
 
               {step === 'budget' && (
                 <div className="grid gap-2">
-                  {BUDGETS.map((b) => (
-                    <OptionButton
-                      key={b.id}
-                      selected={state.budget === b.id}
-                      onClick={() => {
-                        dispatch({ type: 'setBudget', budget: b.id as BudgetId })
-                        next()
-                      }}
-                      title={b.label}
-                      description={b.range}
-                    />
-                  ))}
+                  {BUDGETS.map((b) => {
+                    const locB = getLocalizedBudget(b, language)
+                    return (
+                      <OptionButton
+                        key={b.id}
+                        selected={state.budget === b.id}
+                        onClick={() => {
+                          dispatch({ type: 'setBudget', budget: b.id as BudgetId })
+                          next()
+                        }}
+                        title={locB.label}
+                        description={locB.range}
+                      />
+                    )
+                  })}
                 </div>
               )}
 
               {step === 'categories' && (
                 <>
-                  <p className="text-sm text-muted-foreground">Puedes elegir una o varias.</p>
+                  <p className="text-sm text-muted-foreground">
+                    {language === 'en' ? 'You can choose one or more.' : 'Puedes elegir una o varias.'}
+                  </p>
                   <div className="grid gap-2 sm:grid-cols-2">
-                    {CATEGORIES.map((c) => (
-                      <OptionButton
-                        key={c.id}
-                        icon={CATEGORY_ICONS[c.id]}
-                        selected={categories.includes(c.id)}
-                        onClick={() =>
-                          setCategories((prev) =>
-                            prev.includes(c.id) ? prev.filter((x) => x !== c.id) : [...prev, c.id],
-                          )
-                        }
-                        title={c.name}
-                        description={c.description}
-                      />
-                    ))}
+                    {CATEGORIES.map((c) => {
+                      const locC = getLocalizedCategory(c, language)
+                      return (
+                        <OptionButton
+                          key={c.id}
+                          icon={CATEGORY_ICONS[c.id]}
+                          selected={categories.includes(c.id)}
+                          onClick={() =>
+                            setCategories((prev) =>
+                              prev.includes(c.id) ? prev.filter((x) => x !== c.id) : [...prev, c.id],
+                            )
+                          }
+                          title={locC.name}
+                          description={locC.description}
+                        />
+                      )
+                    })}
                   </div>
                   <NextButton
+                    label={language === 'en' ? 'Continue' : 'Continuar'}
                     disabled={categories.length === 0}
                     onClick={() => {
                       dispatch({ type: 'setCategories', categories })
@@ -435,8 +482,8 @@ export function ExperienceBuilder() {
                       dispatch({ type: 'setNeedsTransport', needs: false })
                       next()
                     }}
-                    title="Sí, cuento con transporte"
-                    description="Llegaré por mi cuenta a cada experiencia"
+                    title={t('chat.transport.yes')}
+                    description={language === 'en' ? 'I will get to each experience on my own' : 'Llegaré por mi cuenta a cada experiencia'}
                   />
                   <OptionButton
                     icon={Bus}
@@ -445,8 +492,8 @@ export function ExperienceBuilder() {
                       dispatch({ type: 'setNeedsTransport', needs: true })
                       next()
                     }}
-                    title="No, necesito transporte"
-                    description="Transporte Raíces desde tu hospedaje"
+                    title={t('chat.transport.no')}
+                    description={language === 'en' ? 'Raíces Transportation from your lodging' : 'Transporte Raíces desde tu hospedaje'}
                   />
                 </div>
               )}
@@ -466,7 +513,9 @@ export function ExperienceBuilder() {
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-border/70 bg-card p-4">
               <p className="text-sm text-muted-foreground">
-                ¿No es lo que buscabas? Cambia tus respuestas o empieza de nuevo.
+                {language === 'en'
+                  ? "Not what you were looking for? Edit your answers or start over."
+                  : "¿No es lo que buscabas? Cambia tus respuestas o empieza de nuevo."}
               </p>
               <div className="flex gap-2">
                 <button
@@ -474,14 +523,14 @@ export function ExperienceBuilder() {
                   onClick={() => setStep('categories')}
                   className="inline-flex h-11 items-center gap-2 rounded-full border border-border bg-background px-4 text-sm font-bold hover:bg-muted"
                 >
-                  <Pencil className="size-4" aria-hidden="true" /> Editar
+                  <Pencil className="size-4" aria-hidden="true" /> {language === 'en' ? 'Edit' : 'Editar'}
                 </button>
                 <button
                   type="button"
                   onClick={restart}
                   className="inline-flex h-11 items-center gap-2 rounded-full border border-border bg-background px-4 text-sm font-bold hover:bg-muted"
                 >
-                  <RotateCcw className="size-4" aria-hidden="true" /> Empezar de nuevo
+                  <RotateCcw className="size-4" aria-hidden="true" /> {t('chat.buttons.reset')}
                 </button>
               </div>
             </div>
@@ -500,10 +549,13 @@ export function ExperienceBuilder() {
             className="flex h-14 items-center justify-between rounded-full bg-foreground px-5 text-background shadow-xl"
           >
             <span className="font-bold">
-              {state.items.length} {state.items.length === 1 ? 'experiencia' : 'experiencias'} en Mi viaje
+              {state.items.length} {state.items.length === 1
+                ? (language === 'en' ? 'experience' : 'experiencia')
+                : (language === 'en' ? 'experiences' : 'experiencias')}{' '}
+              {language === 'en' ? 'in My Trip' : 'en Mi viaje'}
             </span>
             <span className="inline-flex items-center gap-1 text-sm font-bold">
-              Ver <ArrowRight className="size-4" aria-hidden="true" />
+              {language === 'en' ? 'View' : 'Ver'} <ArrowRight className="size-4" aria-hidden="true" />
             </span>
           </Link>
         </div>
@@ -512,7 +564,7 @@ export function ExperienceBuilder() {
   )
 }
 
-function NextButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
+function NextButton({ onClick, disabled, label }: { onClick: () => void; disabled?: boolean; label: string }) {
   return (
     <button
       type="button"
@@ -520,8 +572,9 @@ function NextButton({ onClick, disabled }: { onClick: () => void; disabled?: boo
       disabled={disabled}
       className="inline-flex h-12 items-center justify-center gap-2 self-end rounded-full bg-primary px-6 text-base font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-40"
     >
-      Continuar
+      {label}
       <ArrowRight className="size-4" aria-hidden="true" />
     </button>
   )
 }
+

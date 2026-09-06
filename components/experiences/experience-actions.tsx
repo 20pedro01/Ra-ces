@@ -5,17 +5,21 @@ import { ArrowRight, Check, Plus } from 'lucide-react'
 import { useTrip } from '@/lib/trip-store'
 import { formatMXN } from '@/lib/format'
 import { EXPERIENCE_MAP } from '@/lib/data'
+import { useLanguage } from '@/lib/i18n/context'
 
 export function ExperienceActions({ experienceId }: { experienceId: string }) {
   const { state, hasItem, dispatch, totals } = useTrip()
+  const { t, language } = useLanguage()
   const added = hasItem(experienceId)
   const exp = EXPERIENCE_MAP[experienceId]
 
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-muted-foreground">
-        Para {state.people} {state.people === 1 ? 'persona' : 'personas'}:{' '}
-        <span className="font-bold text-foreground">{formatMXN(exp.price * state.people)}</span>
+        {language === 'en'
+          ? `For ${state.people} ${state.people === 1 ? 'guest' : 'guests'}:`
+          : `Para ${state.people} ${state.people === 1 ? 'persona' : 'personas'}:`}{' '}
+        <span className="font-bold text-foreground">{formatMXN(exp.price * state.people, language)}</span>
       </p>
       <button
         type="button"
@@ -35,11 +39,13 @@ export function ExperienceActions({ experienceId }: { experienceId: string }) {
       >
         {added ? (
           <>
-            <Check className="size-5" aria-hidden="true" /> Agregada a mi experiencia
+            <Check className="size-5" aria-hidden="true" />
+            {language === 'en' ? 'Added to my experience' : 'Agregada a mi experiencia'}
           </>
         ) : (
           <>
-            <Plus className="size-5" aria-hidden="true" /> Agregar a mi experiencia
+            <Plus className="size-5" aria-hidden="true" />
+            {language === 'en' ? 'Add to my experience' : 'Agregar a mi experiencia'}
           </>
         )}
       </button>
@@ -48,7 +54,10 @@ export function ExperienceActions({ experienceId }: { experienceId: string }) {
           href="/mi-viaje"
           className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border text-sm font-bold hover:bg-muted"
         >
-          Ver mi viaje ({totals.itemCount}) <ArrowRight className="size-4" aria-hidden="true" />
+          {language === 'en'
+            ? `View my trip (${totals.itemCount})`
+            : `Ver mi viaje (${totals.itemCount})`}
+          <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
       )}
     </div>
