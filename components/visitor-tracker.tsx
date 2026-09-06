@@ -12,6 +12,7 @@ export function VisitorTracker() {
         fetch('/api/metricas', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          keepalive: true,
           body: JSON.stringify({
             evento: 'visita',
             metadata: {

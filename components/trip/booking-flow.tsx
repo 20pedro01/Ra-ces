@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -65,6 +65,35 @@ export function BookingFlow() {
   const locPkg = pkg ? getLocalizedPackage(pkg, language) : null
   const empty = state.items.length === 0 && !pkg
 
+  // Registrar intención de compra automáticamente cuando la persona llega a la etapa de cobro
+  useEffect(() => {
+    if (empty) return
+    try {
+      const alreadyTracked = sessionStorage.getItem('vr_checkout_intent_tracked')
+      if (!alreadyTracked) {
+        sessionStorage.setItem('vr_checkout_intent_tracked', '1')
+        fetch('/api/metricas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          keepalive: true,
+          body: JSON.stringify({
+            evento: 'intencion_compra',
+            metadata: {
+              origen: 'llego_a_etapa_cobro',
+              total: totals.total,
+              packageId: state.packageId,
+              itemsCount: state.items.length,
+              people: state.people,
+              timestamp: new Date().toISOString(),
+            },
+          }),
+        }).catch((e) => console.warn('Error registrando intención de compra al llegar a cobro:', e))
+      }
+    } catch {
+      // Silencioso si sessionStorage no está disponible
+    }
+  }, [empty, totals.total, state.packageId, state.items.length, state.people])
+
   if (state.confirmed) {
     return (
       <>
@@ -110,27 +139,35 @@ export function BookingFlow() {
     setSubmitting(true)
     setErrorMsg(null)
     try {
-      // 1. Registrar intención de compra en el sistema de métricas
-      fetch('/api/metricas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          evento: 'intencion_compra',
-          metadata: {
-            total: totals.total,
-            method: paymentMethod,
-            people: state.people,
-            startDate: state.startDate,
-            endDate: state.endDate,
-            packageId: state.packageId,
-            itemsCount: state.items.length,
-            customerEmail: contact.email || null,
-            customerName: contact.name || null,
-          },
-        }),
-      }).catch((e) => console.warn('Error al enviar métrica de intención de compra:', e))
+      // Si por alguna razón la métrica no se registró al entrar al cobro, registrarla aquí
+      try {
+        const alreadyTracked = sessionStorage.getItem('vr_checkout_intent_tracked')
+        if (!alreadyTracked) {
+          sessionStorage.setItem('vr_checkout_intent_tracked', '1')
+          fetch('/api/metricas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            keepalive: true,
+            body: JSON.stringify({
+              evento: 'intencion_compra',
+              metadata: {
+                origen: 'confirmacion_pago_click',
+                total: totals.total,
+                method: paymentMethod,
+                people: state.people,
+                startDate: state.startDate,
+                endDate: state.endDate,
+                packageId: state.packageId,
+                itemsCount: state.items.length,
+                customerEmail: contact.email || null,
+                customerName: contact.name || null,
+              },
+            }),
+          }).catch(() => {})
+        }
+      } catch {}
 
-      // 2. Procesar reservación
+      // Procesar reservación
       const res = await fetch('/api/reservas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

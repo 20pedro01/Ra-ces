@@ -187,7 +187,7 @@ export default function MetricasPage() {
               </span>
             </div>
             <p className="mt-2 text-xs text-neutral-400">
-              {lang === "en" ? "Unique browsing sessions recorded" : "Sesiones únicas de navegación registradas"}
+              {lang === "en" ? "People who opened the link (no login required)" : "Personas que abrieron el enlace (sin requerir iniciar sesión)"}
             </p>
           </div>
 
@@ -207,7 +207,7 @@ export default function MetricasPage() {
               </span>
             </div>
             <p className="mt-2 text-xs text-neutral-400">
-              {lang === "en" ? "Reached payment step & confirmed checkout" : "Llegaron al paso de pago y confirmaron compra"}
+              {lang === "en" ? "People who reached the checkout / payment stage" : "Personas que llegaron a la etapa de cobro"}
             </p>
           </div>
 
