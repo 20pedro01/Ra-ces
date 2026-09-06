@@ -79,8 +79,8 @@ export function ExperienceBuilder() {
   }, [step, typing])
 
   const recommendations = useMemo(
-    () => (step === 'results' ? recommend(state) : []),
-    [step, state],
+    () => (step === 'results' ? recommend(state, language) : []),
+    [step, state, language],
   )
 
   const next = () => setStep(ORDER[Math.min(stepIndex + 1, ORDER.length - 1)])
@@ -158,10 +158,7 @@ export function ExperienceBuilder() {
 
         <div className="flex flex-col gap-4 rounded-[2rem] bg-sand/70 p-4 md:p-6">
           <GuideBubble>
-            <p>{language === 'en'
-              ? 'Perfect, let\'s craft something just for you. I\'ll ask you six quick questions.'
-              : 'Perfecto, vamos a armar algo a tu medida. Te haré seis preguntas rápidas.'}
-            </p>
+            <p>{t('chat.intro')}</p>
           </GuideBubble>
 
           {ORDER.slice(0, stepIndex).map((s) => {

@@ -5,6 +5,7 @@ import { TRANSLATIONS, type Locale, type TranslationKey } from './translations'
 
 interface LanguageContextType {
   locale: Locale
+  language: Locale
   setLocale: (locale: Locale) => void
   t: (key: TranslationKey) => string
 }
@@ -51,7 +52,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <LanguageContext.Provider value={{ locale, setLocale, t }}>
+    <LanguageContext.Provider value={{ locale, language: locale, setLocale, t }}>
       {children}
     </LanguageContext.Provider>
   )
@@ -63,6 +64,7 @@ export function useLanguage() {
     // Fallback seguro si se usa fuera del provider durante renderizado inicial
     return {
       locale: 'es' as Locale,
+      language: 'es' as Locale,
       setLocale: () => {},
       t: (key: TranslationKey) => TRANSLATIONS.es[key] ?? key,
     }

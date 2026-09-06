@@ -32,9 +32,12 @@ import {
   MAX_BOOKING_MONTHS_AHEAD,
 } from '@/lib/date-validation'
 import { useTrip } from '@/lib/trip-store'
+import { useLanguage } from '@/lib/i18n/context'
+import { getLocalizedExperience, getLocalizedPackage } from '@/lib/i18n/data-translations'
 
 export function BookingFlow() {
   const { state, totals, dispatch } = useTrip()
+  const { t, language } = useLanguage()
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [contact, setContact] = useState({ name: '', email: '', phone: '' })
@@ -46,6 +49,7 @@ export function BookingFlow() {
   const [dateIsFutureIssue, setDateIsFutureIssue] = useState(false)
   const [showFutureWaitlist, setShowFutureWaitlist] = useState(false)
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
+  const locPkg = pkg ? getLocalizedPackage(pkg, language) : null
   const empty = state.items.length === 0 && !pkg
 
   if (state.confirmed) {
@@ -56,13 +60,13 @@ export function BookingFlow() {
     return (
       <div className="flex flex-col gap-5">
         <GuideBubble>
-          <p>No hay nada que reservar todavía. Empecemos por elegir una experiencia.</p>
+          <p>{language === 'en' ? 'There is nothing to book yet. Let\'s start by choosing an experience.' : 'No hay nada que reservar todavía. Empecemos por elegir una experiencia.'}</p>
         </GuideBubble>
         <Link
           href="/explorar"
           className="inline-flex h-14 w-fit items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-bold text-primary-foreground"
         >
-          Armar mi experiencia
+          {t('trip.emptyAction')}
         </Link>
       </div>
     )
@@ -70,12 +74,12 @@ export function BookingFlow() {
 
   const confirm = async () => {
     if (!state.startDate) {
-      setErrorMsg('Por favor define las fechas de tu visita antes de confirmar la reservación.')
+      setErrorMsg(language === 'en' ? 'Please define the dates of your visit before confirming the reservation.' : 'Por favor define las fechas de tu visita antes de confirmar la reservación.')
       setEditingDates(true)
       return
     }
 
-    const dateValidation = validateDates(state.startDate, state.endDate || state.startDate)
+    const dateValidation = validateDates(state.startDate, state.endDate || state.startDate, language)
     if (!dateValidation.isValid) {
       setErrorMsg(dateValidation.error)
       setEditingDates(true)
@@ -98,7 +102,7 @@ export function BookingFlow() {
 
       const data = await res.json()
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Ocurrió un error al procesar la reservación')
+        throw new Error(data.error || (language === 'en' ? 'An error occurred while processing the reservation' : 'Ocurrió un error al procesar la reservación'))
       }
 
       dispatch({ type: 'confirm', code: data.code })
@@ -107,7 +111,7 @@ export function BookingFlow() {
       setErrorMsg(
         err instanceof Error
           ? err.message
-          : 'No se pudo completar la reservación. Intenta nuevamente.'
+          : (language === 'en' ? 'Could not complete the reservation. Please try again.' : 'No se pudo completar la reservación. Intenta nuevamente.')
       )
     } finally {
       setSubmitting(false)
@@ -122,13 +126,13 @@ export function BookingFlow() {
         href="/mi-viaje"
         className="inline-flex h-11 w-fit items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-bold hover:bg-muted"
       >
-        <ArrowLeft className="size-4" aria-hidden="true" /> Mi viaje
+        <ArrowLeft className="size-4" aria-hidden="true" /> {t('trip.myTrip')}
       </Link>
 
       <header className="flex flex-col gap-3">
-        <h1 className="text-3xl font-semibold md:text-4xl">Tu experiencia</h1>
+        <h1 className="text-3xl font-semibold md:text-4xl">{t('trip.title')}</h1>
         <GuideBubble>
-          <p>Revisa que todo esté como lo quieres. Cuando estés listo, confirmamos.</p>
+          <p>{t('trip.reviewPrompt')}</p>
         </GuideBubble>
       </header>
 
@@ -138,29 +142,33 @@ export function BookingFlow() {
             <Calendar className="mt-0.5 size-5 text-primary" aria-hidden="true" />
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <dt className="text-sm font-bold text-muted-foreground">Fechas</dt>
+                <dt className="text-sm font-bold text-muted-foreground">{t('trip.datesLabel')}</dt>
                 <button
                   type="button"
                   onClick={() => setEditingDates(!editingDates)}
                   className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
                 >
                   <Pencil className="size-3" />
-                  {editingDates ? 'Cerrar' : state.startDate ? 'Cambiar' : 'Definir fechas'}
+                  {editingDates
+                    ? (language === 'en' ? 'Close' : 'Cerrar')
+                    : state.startDate
+                      ? t('trip.datesChange')
+                      : t('trip.datesDefine')}
                 </button>
               </div>
 
               {!editingDates ? (
                 <dd className="font-semibold">
-                  {state.startDate ? formatDate(state.startDate) : (
-                    <span className="font-medium text-amber-600">Por definir (requerido)</span>
+                  {state.startDate ? formatDate(state.startDate, language) : (
+                    <span className="font-medium text-amber-600">{t('trip.datesPending')}</span>
                   )}
-                  {state.endDate && state.endDate !== state.startDate && ` – ${formatDate(state.endDate)}`}
+                  {state.endDate && state.endDate !== state.startDate && ` – ${formatDate(state.endDate, language)}`}
                 </dd>
               ) : (
                 <div className="mt-2 flex flex-col gap-2 rounded-2xl bg-muted/60 p-3">
                   <div className="grid gap-2 sm:grid-cols-2">
                     <label className="flex flex-col gap-1 text-xs font-semibold">
-                      Llegada
+                      {t('chat.dates.arrival')}
                       <input
                         type="date"
                         value={startDateInput}
@@ -179,7 +187,7 @@ export function BookingFlow() {
                       />
                     </label>
                     <label className="flex flex-col gap-1 text-xs font-semibold">
-                      Salida
+                      {t('chat.dates.departure')}
                       <input
                         type="date"
                         value={endDateInput}
@@ -207,7 +215,7 @@ export function BookingFlow() {
                     <AvailabilityNotifier
                       targetDate={startDateInput}
                       allowCustomDate
-                      experienceOrPackage="Mi Viaje"
+                      experienceOrPackage={language === 'en' ? 'My Trip' : 'Mi Viaje'}
                       className="mt-1"
                     />
                   )}
@@ -215,7 +223,7 @@ export function BookingFlow() {
                   <div className="flex flex-col gap-1.5 rounded-xl border border-border/60 bg-background/80 p-2.5 text-xs">
                     <div className="flex flex-wrap items-center justify-between gap-1.5">
                       <span className="text-[11px] text-muted-foreground">
-                        Disponibilidad hasta <strong className="text-foreground">{getMaxFutureMonthLabel()}</strong>.
+                        {language === 'en' ? 'Availability through' : 'Disponibilidad hasta'} <strong className="text-foreground">{getMaxFutureMonthLabel(MAX_BOOKING_MONTHS_AHEAD, language)}</strong>.
                       </span>
                       <button
                         type="button"
@@ -223,7 +231,9 @@ export function BookingFlow() {
                         className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
                       >
                         <Bell className="size-3" />
-                        {showFutureWaitlist ? 'Ocultar' : '¿Viajas después? Avísame'}
+                        {showFutureWaitlist
+                          ? (language === 'en' ? 'Hide' : 'Ocultar')
+                          : (language === 'en' ? 'Traveling later? Notify me' : '¿Viajas después? Avísame')}
                       </button>
                     </div>
 
@@ -231,7 +241,7 @@ export function BookingFlow() {
                       <AvailabilityNotifier
                         targetDate={null}
                         allowCustomDate
-                        experienceOrPackage="Mi Viaje"
+                        experienceOrPackage={language === 'en' ? 'My Trip' : 'Mi Viaje'}
                         className="mt-1"
                       />
                     )}
@@ -239,12 +249,12 @@ export function BookingFlow() {
 
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-[11px] text-muted-foreground">
-                      Máx. {MAX_BOOKING_MONTHS_AHEAD} meses a futuro
+                      {language === 'en' ? `Max. ${MAX_BOOKING_MONTHS_AHEAD} months in advance` : `Máx. ${MAX_BOOKING_MONTHS_AHEAD} meses a futuro`}
                     </span>
                     <button
                       type="button"
                       onClick={() => {
-                        const val = validateDates(startDateInput, endDateInput)
+                        const val = validateDates(startDateInput, endDateInput, language)
                         if (!val.isValid) {
                           setDateInlineError(val.error)
                           setDateIsFutureIssue(Boolean(val.isFutureAvailabilityIssue))
@@ -262,7 +272,7 @@ export function BookingFlow() {
                       }}
                       className="rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90"
                     >
-                      Guardar fechas
+                      {t('trip.saveDates')}
                     </button>
                   </div>
                 </div>
@@ -272,7 +282,7 @@ export function BookingFlow() {
           <div className="flex items-start gap-3">
             <Users className="mt-0.5 size-5 text-primary" aria-hidden="true" />
             <div>
-              <dt className="text-sm font-bold text-muted-foreground">Personas</dt>
+              <dt className="text-sm font-bold text-muted-foreground">{t('trip.peopleLabel')}</dt>
               <dd className="font-semibold">{state.people}</dd>
             </div>
           </div>
@@ -280,38 +290,39 @@ export function BookingFlow() {
 
         <section aria-labelledby="acts" className="flex flex-col gap-2 border-t border-border pt-4">
           <h2 id="acts" className="text-sm font-bold text-muted-foreground">
-            Actividades
+            {t('trip.activitiesLabel')}
           </h2>
           <ul className="flex flex-col gap-2">
-            {pkg && (
+            {pkg && locPkg && (
               <li className="flex items-center gap-3">
                 <div className="relative size-12 shrink-0 overflow-hidden rounded-xl">
                   <Image src={pkg.image} alt="" fill sizes="48px" className="object-cover" />
                 </div>
                 <div className="flex flex-1 flex-col">
-                  <span className="font-semibold leading-snug">{pkg.name}</span>
-                  <span className="text-sm text-muted-foreground">Paquete · {pkg.durationLabel}</span>
+                  <span className="font-semibold leading-snug">{locPkg.name}</span>
+                  <span className="text-sm text-muted-foreground">{language === 'en' ? 'Package' : 'Paquete'} · {locPkg.durationLabel}</span>
                 </div>
-                <span className="font-semibold">{formatMXN(pkg.price * state.people)}</span>
+                <span className="font-semibold">{formatMXN(pkg.price * state.people, language)}</span>
               </li>
             )}
             {state.items.map((item) => {
               const exp = EXPERIENCE_MAP[item.experienceId]
               if (!exp) return null
+              const locExp = getLocalizedExperience(exp, language)
               return (
                 <li key={item.experienceId} className="flex items-center gap-3">
                   <div className="relative size-12 shrink-0 overflow-hidden rounded-xl">
                     <Image src={exp.image} alt="" fill sizes="48px" className="object-cover" />
                   </div>
                   <div className="flex flex-1 flex-col">
-                    <span className="font-semibold leading-snug">{exp.name}</span>
+                    <span className="font-semibold leading-snug">{locExp.name}</span>
                     <span className="text-sm text-muted-foreground">
-                      Día {item.day}
-                      {state.startDate && ` · ${formatDateShort(addDays(state.startDate, item.day - 1))}`} ·{' '}
+                      {language === 'en' ? 'Day' : 'Día'} {item.day}
+                      {state.startDate && ` · ${formatDateShort(addDays(state.startDate, item.day - 1), language)}`} ·{' '}
                       {formatHour(item.startHour)}
                     </span>
                   </div>
-                  <span className="font-semibold">{formatMXN(exp.price * state.people)}</span>
+                  <span className="font-semibold">{formatMXN(exp.price * state.people, language)}</span>
                 </li>
               )
             })}
@@ -320,57 +331,61 @@ export function BookingFlow() {
 
         <section aria-labelledby="transp" className="flex flex-col gap-2 border-t border-border pt-4">
           <h2 id="transp" className="text-sm font-bold text-muted-foreground">
-            Transporte
+            {t('trip.transportLabel')}
           </h2>
           <p className="flex items-center gap-2">
             <Bus className="size-4 text-primary" aria-hidden="true" />
             {totals.transport > 0 ? (
               <span>
-                Transporte Raíces incluido
-                {state.transportEnabled && ` · ${formatMXN(TRANSPORT_PRICE_PER_PERSON)} por persona por día`}
+                {t('trip.transportIncluded')}
+                {state.transportEnabled && ` · ${formatMXN(TRANSPORT_PRICE_PER_PERSON, language)} ${language === 'en' ? 'per guest per day' : 'por persona por día'}`}
               </span>
             ) : (
-              <span>Sin transporte. Llegas por tu cuenta.</span>
+              <span>{t('trip.transportNone')}</span>
             )}
           </p>
         </section>
 
         <section aria-labelledby="extras" className="flex flex-col gap-2 border-t border-border pt-4">
           <h2 id="extras" className="text-sm font-bold text-muted-foreground">
-            Opciones adicionales
+            {t('trip.extrasLabel')}
           </h2>
           {extras.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Ninguna</p>
+            <p className="text-sm text-muted-foreground">{t('trip.extrasNone')}</p>
           ) : (
             <ul className="flex flex-col gap-1.5">
-              {extras.map((item) => (
-                <li key={item.experienceId} className="flex items-center gap-2 text-sm">
-                  {item.pickup === 'envio' ? (
-                    <Truck className="size-4 text-earth" aria-hidden="true" />
-                  ) : (
-                    <Package className="size-4 text-earth" aria-hidden="true" />
-                  )}
-                  {EXPERIENCE_MAP[item.experienceId]?.name}:{' '}
-                  {item.pickup === 'envio' ? 'envío de la pieza terminada' : 'recoger la pieza posteriormente'}
-                </li>
-              ))}
+              {extras.map((item) => {
+                const exp = EXPERIENCE_MAP[item.experienceId]
+                const locExp = exp ? getLocalizedExperience(exp, language) : null
+                return (
+                  <li key={item.experienceId} className="flex items-center gap-2 text-sm">
+                    {item.pickup === 'envio' ? (
+                      <Truck className="size-4 text-earth" aria-hidden="true" />
+                    ) : (
+                      <Package className="size-4 text-earth" aria-hidden="true" />
+                    )}
+                    {locExp?.name ?? exp?.name}:{' '}
+                    {item.pickup === 'envio' ? t('trip.shippingOption') : t('trip.pickupOption')}
+                  </li>
+                )
+              })}
             </ul>
           )}
         </section>
 
         <section aria-labelledby="contact-section" className="flex flex-col gap-3 border-t border-border pt-4">
           <h2 id="contact-section" className="text-sm font-bold text-muted-foreground">
-            Datos de contacto (opcional)
+            {t('trip.contactTitle')}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label htmlFor="customer-name" className="text-xs font-semibold text-muted-foreground">
-                Nombre completo
+                {t('trip.contactName')}
               </label>
               <input
                 id="customer-name"
                 type="text"
-                placeholder="Ej. Sofía Morales"
+                placeholder={language === 'en' ? 'E.g. Sarah Jenkins' : 'Ej. Sofía Morales'}
                 value={contact.name}
                 onChange={(e) => setContact({ ...contact, name: e.target.value })}
                 className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -378,12 +393,12 @@ export function BookingFlow() {
             </div>
             <div>
               <label htmlFor="customer-email" className="text-xs font-semibold text-muted-foreground">
-                Correo electrónico
+                {t('trip.contactEmail')}
               </label>
               <input
                 id="customer-email"
                 type="email"
-                placeholder="tu@correo.com"
+                placeholder={language === 'en' ? 'your@email.com' : 'tu@correo.com'}
                 value={contact.email}
                 onChange={(e) => setContact({ ...contact, email: e.target.value })}
                 className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -394,16 +409,16 @@ export function BookingFlow() {
 
         <dl className="flex flex-col gap-1.5 border-t border-border pt-4">
           <div className="flex justify-between text-sm">
-            <dt className="text-muted-foreground">Precio de experiencias</dt>
-            <dd>{formatMXN(totals.experiences + totals.packagePrice)}</dd>
+            <dt className="text-muted-foreground">{t('trip.priceExperiences')}</dt>
+            <dd>{formatMXN(totals.experiences + totals.packagePrice, language)}</dd>
           </div>
           <div className="flex justify-between text-sm">
-            <dt className="text-muted-foreground">Transporte</dt>
-            <dd>{formatMXN(totals.transport)}</dd>
+            <dt className="text-muted-foreground">{t('trip.priceTransport')}</dt>
+            <dd>{formatMXN(totals.transport, language)}</dd>
           </div>
           <div className="flex justify-between pt-2 text-2xl font-bold">
-            <dt>Total estimado</dt>
-            <dd>{formatMXN(totals.total)}</dd>
+            <dt>{t('trip.priceTotal')}</dt>
+            <dd>{formatMXN(totals.total, language)}</dd>
           </div>
         </dl>
 
@@ -411,8 +426,7 @@ export function BookingFlow() {
           <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-900 dark:text-amber-200">
             <Clock className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
             <div>
-              <span className="font-bold">Reservación en las próximas 48 horas:</span>{' '}
-              Los talleres artesanales requieren preparación previa de insumos frescos. Al confirmar, coordinaremos inmediatamente con los artesanos para asegurar tu espacio sin contratiempos.
+              {t('trip.lastMinuteNotice')}
             </div>
           </div>
         )}
@@ -434,16 +448,16 @@ export function BookingFlow() {
         >
           {submitting ? (
             <>
-              <Loader2 className="size-5 animate-spin" aria-hidden="true" /> Confirmando…
+              <Loader2 className="size-5 animate-spin" aria-hidden="true" /> {t('trip.confirming')}
             </>
           ) : (
             <>
-              <Check className="size-5" aria-hidden="true" /> Confirmar reservación
+              <Check className="size-5" aria-hidden="true" /> {t('trip.confirmButton')}
             </>
           )}
         </button>
         <p className="text-center text-xs text-muted-foreground">
-          Al confirmar, tu reservación quedará registrada en el sistema.
+          {t('trip.confirmNotice')}
         </p>
       </div>
     </div>
@@ -452,6 +466,7 @@ export function BookingFlow() {
 
 function Confirmation() {
   const { state, totals, dispatch } = useTrip()
+  const { t, language } = useLanguage()
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
   const first = state.items[0] ? EXPERIENCE_MAP[state.items[0].experienceId] : null
   const image = pkg?.image ?? first?.image ?? '/images/comunidad.png'
@@ -465,29 +480,29 @@ function Confirmation() {
           <span className="flex size-14 items-center justify-center rounded-full bg-leaf text-leaf-foreground">
             <Leaf className="size-7" aria-hidden="true" />
           </span>
-          <h1 className="text-3xl font-semibold text-balance md:text-4xl">¡Tu experiencia está lista!</h1>
+          <h1 className="text-3xl font-semibold text-balance md:text-4xl">{t('confirm.heroTitle')}</h1>
         </div>
       </div>
 
       <div className="flex max-w-lg flex-col gap-2">
-        <p className="text-lg leading-relaxed">Gracias por elegir Raíces.</p>
+        <p className="text-lg leading-relaxed">{t('confirm.thanks')}</p>
         <p className="text-lg leading-relaxed text-muted-foreground">
-          Ahora estás listo para vivir Yucatán de una manera diferente.
+          {t('confirm.tagline')}
         </p>
       </div>
 
       <dl className="grid w-full gap-3 rounded-3xl border border-border/70 bg-card p-5 text-left shadow-sm sm:grid-cols-3">
         <div>
-          <dt className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Código</dt>
+          <dt className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('confirm.code')}</dt>
           <dd className="font-mono text-lg font-bold">{state.confirmationCode}</dd>
         </div>
         <div>
-          <dt className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Fecha</dt>
-          <dd className="font-semibold">{state.startDate ? formatDateShort(state.startDate) : 'Por confirmar'}</dd>
+          <dt className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('confirm.date')}</dt>
+          <dd className="font-semibold">{state.startDate ? formatDateShort(state.startDate, language) : (language === 'en' ? 'To be confirmed' : 'Por confirmar')}</dd>
         </div>
         <div>
-          <dt className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total estimado</dt>
-          <dd className="font-semibold">{formatMXN(totals.total)}</dd>
+          <dt className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('confirm.total')}</dt>
+          <dd className="font-semibold">{formatMXN(totals.total, language)}</dd>
         </div>
       </dl>
 
@@ -497,9 +512,9 @@ function Confirmation() {
             <Info className="size-5 shrink-0" aria-hidden="true" />
           </div>
           <div className="flex flex-col gap-1 text-sm">
-            <span className="font-bold text-foreground">Coordinación artesanal y comunitaria</span>
+            <span className="font-bold text-foreground">{t('confirm.communityTitle')}</span>
             <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
-              Cada taller se imparte en grupos reducidos guiados directamente por maestros y familias artesanas. Nos pondremos en contacto contigo por correo o teléfono para afinar detalles de llegada, puntos de encuentro y responder cualquier duda antes de tu visita.
+              {t('confirm.communityDesc')}
             </p>
           </div>
         </div>
@@ -510,14 +525,14 @@ function Confirmation() {
           href="/mi-viaje"
           className="inline-flex h-12 items-center rounded-full border border-border bg-card px-5 text-sm font-bold hover:bg-muted"
         >
-          Ver mi itinerario
+          {t('confirm.viewItinerary')}
         </Link>
         <Link
           href="/"
           onClick={() => dispatch({ type: 'reset' })}
           className="inline-flex h-12 items-center rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
         >
-          Planear otro viaje
+          {t('confirm.planAnother')}
         </Link>
       </div>
     </div>

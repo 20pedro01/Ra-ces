@@ -1,5 +1,19 @@
-import type { Experience, TourPackage, Category, Zone, BudgetId } from '@/lib/data'
+import { CATEGORY_MAP, type Experience, type TourPackage, type Category, type CategoryId, type Zone, type BudgetId } from '@/lib/data'
 import type { Locale } from './translations'
+
+export function getLocalizedCategory(cat: Category | CategoryId, locale: Locale): Category {
+  const catId = typeof cat === 'string' ? cat : cat.id
+  const base = typeof cat === 'string' ? CATEGORY_MAP[cat] : cat
+  if (locale === 'es') return base
+  const translation = CATEGORIES_EN[catId]
+  if (!translation) return base
+  return {
+    ...base,
+    name: translation.name,
+    short: translation.short,
+    description: translation.description,
+  }
+}
 
 export const CATEGORIES_EN: Record<string, { name: string; short: string; description: string }> = {
   naturaleza: {
@@ -308,18 +322,6 @@ export function getLocalizedPackage(pkg: TourPackage, locale: Locale): TourPacka
     includes: translation.includes || pkg.includes,
     activities: translation.activities || pkg.activities,
     bring: translation.bring || pkg.bring,
-  }
-}
-
-export function getLocalizedCategory(cat: Category, locale: Locale): Category {
-  if (locale === 'es') return cat
-  const translation = CATEGORIES_EN[cat.id]
-  if (!translation) return cat
-  return {
-    ...cat,
-    name: translation.name,
-    short: translation.short,
-    description: translation.description,
   }
 }
 

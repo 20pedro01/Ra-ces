@@ -9,10 +9,14 @@ import { Switch } from '@/components/ui/switch'
 import { EXPERIENCE_MAP, PACKAGES, TRANSPORT_PRICE_PER_PERSON } from '@/lib/data'
 import { addDays, formatDateShort, formatDuration, formatHour, formatMXN } from '@/lib/format'
 import { useTrip } from '@/lib/trip-store'
+import { useLanguage } from '@/lib/i18n/context'
+import { getLocalizedExperience, getLocalizedPackage } from '@/lib/i18n/data-translations'
 
 export function Itinerary() {
   const { state, totals, dispatch } = useTrip()
+  const { t, language } = useLanguage()
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
+  const locPkg = pkg ? getLocalizedPackage(pkg, language) : null
   const empty = state.items.length === 0 && !pkg
 
   const days = Array.from(new Set(state.items.map((i) => i.day))).sort((a, b) => a - b)
@@ -20,25 +24,22 @@ export function Itinerary() {
   if (empty) {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-6 py-6">
-        <h1 className="text-3xl font-semibold md:text-4xl">Mi experiencia</h1>
+        <h1 className="text-3xl font-semibold md:text-4xl">{t('trip.itinerary.title')}</h1>
         <GuideBubble>
-          <p>
-            Todavía no has elegido nada. Cuéntame qué te gustaría vivir y te ayudo a armarlo, o mira
-            los paquetes que ya diseñamos con las comunidades.
-          </p>
+          <p>{t('trip.itinerary.emptyBubble')}</p>
         </GuideBubble>
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
             href="/explorar"
             className="flex h-14 items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-primary-foreground"
           >
-            <Compass className="size-5" aria-hidden="true" /> Armar mi experiencia
+            <Compass className="size-5" aria-hidden="true" /> {t('trip.itinerary.buildExperience')}
           </Link>
           <Link
             href="/paquetes"
             className="flex h-14 items-center justify-center gap-2 rounded-full bg-earth text-base font-bold text-earth-foreground"
           >
-            <Backpack className="size-5" aria-hidden="true" /> Ver paquetes
+            <Backpack className="size-5" aria-hidden="true" /> {t('trip.itinerary.viewPackages')}
           </Link>
         </div>
       </div>
@@ -49,38 +50,40 @@ export function Itinerary() {
     <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
       <section className="flex flex-col gap-6">
         <header className="flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold md:text-4xl">Mi experiencia</h1>
+          <h1 className="text-3xl font-semibold md:text-4xl">{t('trip.itinerary.title')}</h1>
           <p className="text-muted-foreground">
             {state.startDate
-              ? `Del ${formatDateShort(state.startDate)} · ${state.people} ${state.people === 1 ? 'persona' : 'personas'}`
-              : `${state.people} ${state.people === 1 ? 'persona' : 'personas'} · fecha por confirmar`}
+              ? `${language === 'en' ? 'From ' : 'Del '}${formatDateShort(state.startDate, language)} · ${state.people} ${state.people === 1 ? (language === 'en' ? 'guest' : 'persona') : (language === 'en' ? 'guests' : 'personas')}`
+              : `${state.people} ${state.people === 1 ? (language === 'en' ? 'guest' : 'persona') : (language === 'en' ? 'guests' : 'personas')} · ${t('trip.itinerary.dateToConfirm')}`}
           </p>
         </header>
 
-        {pkg && (
+        {pkg && locPkg && (
           <article className="flex gap-4 overflow-hidden rounded-3xl border border-border/70 bg-card p-3 shadow-sm">
             <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl sm:size-32">
-              <Image src={pkg.image} alt={pkg.name} fill sizes="128px" className="object-cover" />
+              <Image src={pkg.image} alt={locPkg.name} fill sizes="128px" className="object-cover" />
             </div>
             <div className="flex flex-1 flex-col gap-1 py-1">
-              <span className="w-fit rounded-full bg-earth/15 px-2.5 py-0.5 text-xs font-bold text-earth">Paquete</span>
-              <h2 className="text-lg font-semibold leading-snug">{pkg.name}</h2>
+              <span className="w-fit rounded-full bg-earth/15 px-2.5 py-0.5 text-xs font-bold text-earth">
+                {language === 'en' ? 'Package' : 'Paquete'}
+              </span>
+              <h2 className="text-lg font-semibold leading-snug">{locPkg.name}</h2>
               <p className="text-sm text-muted-foreground">
-                {pkg.durationLabel} · {pkg.location}
+                {locPkg.durationLabel} · {locPkg.location}
               </p>
-              <p className="mt-auto font-bold">{formatMXN(pkg.price * state.people)}</p>
+              <p className="mt-auto font-bold">{formatMXN(pkg.price * state.people, language)}</p>
             </div>
             <div className="flex flex-col items-end justify-between">
               <button
                 type="button"
-                aria-label="Quitar paquete"
+                aria-label={t('trip.itinerary.removePackage')}
                 onClick={() => dispatch({ type: 'clearPackage' })}
                 className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 <X className="size-4" />
               </button>
               <Link href={`/paquetes/${pkg.slug}`} className="text-sm font-bold text-primary hover:underline">
-                Editar
+                {t('trip.itinerary.edit')}
               </Link>
             </div>
           </article>
@@ -90,11 +93,11 @@ export function Itinerary() {
           <section key={day} aria-labelledby={`dia-${day}`} className="flex flex-col gap-3">
             <h2 id={`dia-${day}`} className="flex items-center gap-3 text-xl font-semibold">
               <span className="rounded-full bg-foreground px-3 py-1 text-sm font-bold text-background">
-                Día {day}
+                {t('trip.itinerary.day')} {day}
               </span>
               {state.startDate && (
                 <span className="text-base font-normal text-muted-foreground">
-                  {formatDateShort(addDays(state.startDate, day - 1))}
+                  {formatDateShort(addDays(state.startDate, day - 1), language)}
                 </span>
               )}
             </h2>
@@ -104,6 +107,7 @@ export function Itinerary() {
                 .map((item) => {
                   const exp = EXPERIENCE_MAP[item.experienceId]
                   if (!exp) return null
+                  const locExp = getLocalizedExperience(exp, language)
                   return (
                     <li key={item.experienceId} className="relative">
                       <span
@@ -112,22 +116,22 @@ export function Itinerary() {
                       />
                       <article className="flex gap-3 rounded-3xl border border-border/70 bg-card p-3 shadow-sm sm:gap-4">
                         <div className="relative hidden size-28 shrink-0 overflow-hidden rounded-2xl sm:block">
-                          <Image src={exp.image} alt={exp.name} fill sizes="112px" className="object-cover" />
+                          <Image src={exp.image} alt={locExp.name} fill sizes="112px" className="object-cover" />
                         </div>
                         <div className="flex flex-1 flex-col gap-1.5">
                           <div className="flex items-center gap-2 text-sm font-bold text-primary">
                             <Clock className="size-4" aria-hidden="true" />
-                            {formatHour(item.startHour)} · {formatDuration(exp.durationHours)}
+                            {formatHour(item.startHour)} · {formatDuration(exp.durationHours, language)}
                           </div>
                           <h3 className="text-lg font-semibold leading-snug">
                             <Link href={`/experiencias/${exp.slug}`} className="hover:underline">
-                              {exp.name}
+                              {locExp.name}
                             </Link>
                           </h3>
                           <div className="flex flex-wrap items-center gap-2">
                             <CategoryBadge category={exp.category} />
                             <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                              <MapPin className="size-3.5" aria-hidden="true" /> {exp.location}
+                              <MapPin className="size-3.5" aria-hidden="true" /> {locExp.location}
                             </span>
                           </div>
                           {item.pickup && (
@@ -137,20 +141,22 @@ export function Itinerary() {
                               ) : (
                                 <Package className="size-3.5" aria-hidden="true" />
                               )}
-                              {item.pickup === 'envio' ? 'Envío de tu pieza solicitado' : 'Recogerás tu pieza después'}
+                              {item.pickup === 'envio'
+                                ? t('trip.itinerary.shippingRequested')
+                                : t('trip.itinerary.pickupLater')}
                             </p>
                           )}
                           <p className="mt-auto pt-1 font-bold">
-                            {formatMXN(exp.price * state.people)}
+                            {formatMXN(exp.price * state.people, language)}
                             <span className="text-sm font-normal text-muted-foreground">
                               {' '}
-                              · {formatMXN(exp.price)} × {state.people}
+                              · {formatMXN(exp.price, language)} × {state.people}
                             </span>
                           </p>
                         </div>
                         <button
                           type="button"
-                          aria-label={`Quitar ${exp.name}`}
+                          aria-label={t('trip.itinerary.removeExperience').replace('{name}', locExp.name)}
                           onClick={() => dispatch({ type: 'removeExperience', experienceId: exp.id })}
                           className="flex size-9 shrink-0 items-center justify-center self-start rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
                         >
@@ -169,20 +175,20 @@ export function Itinerary() {
             href="/explorar"
             className="inline-flex h-12 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-bold hover:bg-muted"
           >
-            <Plus className="size-4" aria-hidden="true" /> Agregar experiencia
+            <Plus className="size-4" aria-hidden="true" /> {t('trip.itinerary.addExperience')}
           </Link>
           <Link
             href="/explorar"
             className="inline-flex h-12 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-bold hover:bg-muted"
           >
-            <Pencil className="size-4" aria-hidden="true" /> Editar preferencias
+            <Pencil className="size-4" aria-hidden="true" /> {t('trip.itinerary.editPreferences')}
           </Link>
         </div>
       </section>
 
       <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
         <div className="flex flex-col gap-4 rounded-3xl border border-border/70 bg-card p-5 shadow-md">
-          <h2 className="text-xl font-semibold">Resumen</h2>
+          <h2 className="text-xl font-semibold">{t('trip.itinerary.summary')}</h2>
 
           {(state.items.length > 0 || pkg) && (
             <div className="flex flex-col gap-2">
@@ -190,11 +196,11 @@ export function Itinerary() {
                 <label className="flex items-center justify-between gap-3 rounded-2xl bg-accent px-4 py-3 text-accent-foreground">
                   <span className="flex flex-col">
                     <span className="flex items-center gap-2 text-sm font-bold">
-                      <Bus className="size-4" aria-hidden="true" /> Transporte Raíces
+                      <Bus className="size-4" aria-hidden="true" /> {t('trip.itinerary.transportRaices')}
                     </span>
                     <span className="text-xs">
-                      {formatMXN(TRANSPORT_PRICE_PER_PERSON)} / persona / día
-                      {state.needsTransport === false && ' · indicaste que tienes transporte'}
+                      {formatMXN(TRANSPORT_PRICE_PER_PERSON, language)} / {language === 'en' ? 'guest' : 'persona'} / {language === 'en' ? 'day' : 'día'}
+                      {state.needsTransport === false && ` · ${t('trip.itinerary.hasOwnTransport')}`}
                     </span>
                   </span>
                   <Switch
@@ -207,9 +213,9 @@ export function Itinerary() {
                 <label className="flex items-center justify-between gap-3 rounded-2xl bg-accent px-4 py-3 text-accent-foreground">
                   <span className="flex flex-col">
                     <span className="flex items-center gap-2 text-sm font-bold">
-                      <Bus className="size-4" aria-hidden="true" /> Transporte del paquete
+                      <Bus className="size-4" aria-hidden="true" /> {t('trip.itinerary.transportPackage')}
                     </span>
-                    <span className="text-xs">{formatMXN(pkg.transportPrice)} / persona</span>
+                    <span className="text-xs">{formatMXN(pkg.transportPrice, language)} / {language === 'en' ? 'guest' : 'persona'}</span>
                   </span>
                   <Switch
                     checked={state.packageTransport}
@@ -222,16 +228,16 @@ export function Itinerary() {
 
           <dl className="flex flex-col gap-2 border-t border-border pt-4">
             <div className="flex justify-between text-sm">
-              <dt className="text-muted-foreground">Experiencias</dt>
-              <dd className="font-semibold">{formatMXN(totals.experiences + totals.packagePrice)}</dd>
+              <dt className="text-muted-foreground">{t('trip.priceExperiences')}</dt>
+              <dd className="font-semibold">{formatMXN(totals.experiences + totals.packagePrice, language)}</dd>
             </div>
             <div className="flex justify-between text-sm">
-              <dt className="text-muted-foreground">Transporte</dt>
-              <dd className="font-semibold">{formatMXN(totals.transport)}</dd>
+              <dt className="text-muted-foreground">{t('trip.priceTransport')}</dt>
+              <dd className="font-semibold">{formatMXN(totals.transport, language)}</dd>
             </div>
             <div className="flex justify-between pt-1 text-xl font-bold">
-              <dt>Total estimado</dt>
-              <dd>{formatMXN(totals.total)}</dd>
+              <dt>{t('trip.priceTotal')}</dt>
+              <dd>{formatMXN(totals.total, language)}</dd>
             </div>
           </dl>
 
@@ -239,7 +245,7 @@ export function Itinerary() {
             href="/mi-viaje/reservar"
             className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-earth text-base font-bold text-earth-foreground transition-all hover:bg-earth/90 active:scale-[0.99]"
           >
-            Continuar <ArrowRight className="size-5" aria-hidden="true" />
+            {t('trip.itinerary.continue')} <ArrowRight className="size-5" aria-hidden="true" />
           </Link>
         </div>
       </aside>

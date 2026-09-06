@@ -49,7 +49,7 @@ export function PaquetesPageContent() {
           </span>
           <h2 className="text-3xl font-semibold leading-tight text-balance md:text-5xl">{locFeatured.name}</h2>
           <p className="max-w-2xl text-base leading-relaxed text-primary-foreground/90 text-pretty md:text-lg">
-            {featured.tagline}. {locFeatured.description.split('. ')[0]}.
+            {(locFeatured.tagline ?? featured.tagline)}. {locFeatured.description.split('. ')[0]}.
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
             <span className="inline-flex items-center gap-1.5">
@@ -102,10 +102,10 @@ export function PaquetesPageContent() {
                         {locPkg.name}
                       </Link>
                     </h3>
-                    <p className="text-sm text-muted-foreground">{pkg.tagline}</p>
+                    <p className="text-sm text-muted-foreground">{locPkg.tagline ?? pkg.tagline}</p>
                   </div>
                   <ul className="flex flex-col gap-1 text-sm text-foreground/85">
-                    {pkg.activities.slice(0, 3).map((a) => (
+                    {(locPkg.activities ?? pkg.activities).slice(0, 3).map((a) => (
                       <li key={a} className="flex gap-2">
                         <span className="mt-2 size-1.5 shrink-0 rounded-full bg-leaf" aria-hidden="true" />
                         {a}

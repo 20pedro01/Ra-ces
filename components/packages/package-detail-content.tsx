@@ -29,7 +29,7 @@ export function PackageDetailContent({ pkg }: { pkg: TourPackage }) {
       <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-12 md:px-6 lg:grid-cols-[1fr_360px]">
         <article className="-mt-16 flex flex-col gap-8 rounded-[2rem] bg-background p-1 md:-mt-20">
           <header className="flex flex-col gap-3">
-            <p className="text-sm font-bold uppercase tracking-wider text-leaf">{pkg.tagline}</p>
+            <p className="text-sm font-bold uppercase tracking-wider text-leaf">{locPkg.tagline ?? pkg.tagline}</p>
             <h1 className="text-4xl font-semibold leading-tight text-balance md:text-5xl">{locPkg.name}</h1>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
@@ -47,7 +47,7 @@ export function PackageDetailContent({ pkg }: { pkg: TourPackage }) {
               {language === 'en' ? 'Included Activities' : 'Actividades incluidas'}
             </h2>
             <ol className="flex flex-col gap-3">
-              {pkg.activities.map((activity, i) => (
+              {(locPkg.activities ?? pkg.activities).map((activity, i) => (
                 <li key={activity} className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-sm">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-bold text-secondary-foreground">
                     {i + 1}
@@ -79,7 +79,7 @@ export function PackageDetailContent({ pkg }: { pkg: TourPackage }) {
                 {language === 'en' ? 'What to bring' : 'Qué llevar'}
               </h2>
               <ul className="flex flex-col gap-2 text-[15px]">
-                {pkg.bring.map((item) => (
+                {(locPkg.bring ?? pkg.bring).map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-2 size-1.5 shrink-0 rounded-full bg-earth" aria-hidden="true" />
                     {item}
