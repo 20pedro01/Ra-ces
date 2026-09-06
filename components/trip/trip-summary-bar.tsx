@@ -8,6 +8,7 @@ import { formatMXN } from '@/lib/format'
 import { useTrip } from '@/lib/trip-store'
 import { useLanguage } from '@/lib/i18n/context'
 import { getLocalizedExperience, getLocalizedPackage } from '@/lib/i18n/data-translations'
+import { cn } from '@/lib/utils'
 
 export function TripSummaryBar({ showContinue = true }: { showContinue?: boolean }) {
   const { state, totals, dispatch } = useTrip()
@@ -23,50 +24,66 @@ export function TripSummaryBar({ showContinue = true }: { showContinue?: boolean
         <h2 className="text-xl font-semibold">{t('trip.itinerary.title')}</h2>
       </div>
 
-      {empty ? (
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {t('trip.summary.emptyText')}
-        </p>
-      ) : (
-        <ul className="flex flex-col gap-2">
-          {pkg && locPkg && (
-            <li className="flex items-start justify-between gap-2 text-sm">
-              <span className="font-semibold">{language === 'en' ? 'Package' : 'Paquete'}: {locPkg.name}</span>
-              <span className="whitespace-nowrap">{formatMXN(pkg.price * state.people, language)}</span>
-            </li>
-          )}
+      {empty && (
+        <p className="text-sm text-muted-foreground">{t('trip.summary.empty')}</p>
+      )}
+
+      {pkg && locPkg && (
+        <div className="flex items-center justify-between gap-3 rounded-2xl bg-earth/10 p-3">
+          <div className="flex flex-col">
+            <span className="text-xs font-bold uppercase tracking-wider text-earth">
+              {language === 'en' ? 'Selected package' : 'Paquete seleccionado'}
+            </span>
+            <span className="font-semibold text-foreground">{locPkg.name}</span>
+            <span className="text-xs text-muted-foreground">{formatMXN(pkg.price * state.people, language)}</span>
+          </div>
+          <button
+            type="button"
+            aria-label={t('trip.itinerary.removePackage')}
+            onClick={() => dispatch({ type: 'clearPackage' })}
+            className="flex size-7 items-center justify-center rounded-full text-muted-foreground hover:bg-earth/20 hover:text-foreground"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      )}
+
+      {state.items.length > 0 && (
+        <ul className="flex flex-col divide-y divide-border/60">
           {state.items.map((item) => {
             const exp = EXPERIENCE_MAP[item.experienceId]
             if (!exp) return null
             const locExp = getLocalizedExperience(exp, language)
             return (
-              <li key={item.experienceId} className="flex flex-col gap-1 text-sm border-b border-border/40 pb-2">
+              <li key={item.experienceId} className="flex flex-col gap-1 py-2 text-sm first:pt-0 last:pb-0">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="flex items-start gap-1.5">
-                    <button
-                      type="button"
-                      aria-label={t('trip.itinerary.removeExperience').replace('{name}', locExp.name)}
-                      onClick={() => dispatch({ type: 'removeExperience', experienceId: exp.id })}
-                      className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-                    >
-                      <X className="size-3.5" />
-                    </button>
-                    <span className="font-medium">{locExp.name}</span>
-                  </span>
-                  <span className="whitespace-nowrap font-semibold">{formatMXN(exp.price * state.people, language)}</span>
+                  <div className="flex flex-col">
+                    <span className="font-semibold leading-snug">{locExp.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t('trip.itinerary.day')} {item.day} · {formatMXN(exp.price * state.people, language)}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={`${t('trip.summary.remove')} ${locExp.name}`}
+                    onClick={() => dispatch({ type: 'removeExperience', experienceId: exp.id })}
+                    className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <X className="size-3.5" />
+                  </button>
                 </div>
                 {exp.isWorkshop && (
-                  <div className="flex items-center justify-between pl-6 text-[11px]">
-                    <span className="text-muted-foreground flex items-center gap-1">
+                  <div className="mt-1 flex items-center justify-between text-xs rounded-lg bg-sand/60 px-2 py-1">
+                    <span className="inline-flex items-center gap-1 text-muted-foreground">
                       {item.pickup === 'envio' ? (
                         <>
                           <Truck className="size-3 text-leaf" />
-                          <strong className="text-leaf">{language === 'en' ? 'Shipping requested' : 'Con envío'}</strong>
+                          <span className="font-medium text-foreground">{language === 'en' ? 'Shipping included' : 'Con envío'}</span>
                         </>
                       ) : (
                         <>
                           <Package className="size-3 text-primary" />
-                          <span>{language === 'en' ? 'Pick up at workshop' : 'Recoger en taller'}</span>
+                          <span>{language === 'en' ? 'Pick up in workshop' : 'Recoger en taller'}</span>
                         </>
                       )}
                     </span>
@@ -130,8 +147,10 @@ export function TripSummaryBar({ showContinue = true }: { showContinue?: boolean
       {showContinue && (
         <Link
           href="/mi-viaje"
-          aria-disabled={empty}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-earth text-base font-bold text-earth-foreground transition-all hover:bg-earth/90 aria-disabled:pointer-events-none aria-disabled:opacity-40"
+          className={cn(
+            "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-earth text-base font-bold text-earth-foreground transition-all hover:bg-earth/90",
+            empty && "opacity-80"
+          )}
         >
           {t('trip.summary.viewTrip')}
           <ArrowRight className="size-4" aria-hidden="true" />

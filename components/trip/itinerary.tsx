@@ -11,6 +11,7 @@ import { addDays, formatDateShort, formatDuration, formatHour, formatMXN } from 
 import { useTrip } from '@/lib/trip-store'
 import { useLanguage } from '@/lib/i18n/context'
 import { getLocalizedExperience, getLocalizedPackage } from '@/lib/i18n/data-translations'
+import { cn } from '@/lib/utils'
 
 export function Itinerary() {
   const { state, totals, dispatch } = useTrip()
