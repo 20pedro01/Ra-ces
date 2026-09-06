@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase, isSupabaseConfigured, type ReservacionPayload } from '@/lib/supabase'
 import { validateDates } from '@/lib/date-validation'
+import { sendReservationConfirmationEmail } from '@/lib/email'
 
 function generateReservationCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -73,12 +74,34 @@ export async function POST(request: Request) {
         )
       }
 
+      // Si el cliente proporcionó correo, enviamos confirmación desde el servidor
+      if (customer?.email && customer.email.includes('@')) {
+        await sendReservationConfirmationEmail({
+          email: customer.email.trim(),
+          customerName: customer.name,
+          code: data.code,
+          startDate: state.startDate,
+          total: totals.total ?? 0,
+        })
+      }
+
       return NextResponse.json({
         success: true,
         persisted: true,
         code: data.code,
         id: data.id,
         createdAt: data.created_at,
+      })
+    }
+
+    // Si el cliente proporcionó correo en modo de prueba, también procesamos la notificación
+    if (customer?.email && customer.email.includes('@')) {
+      await sendReservationConfirmationEmail({
+        email: customer.email.trim(),
+        customerName: customer.name,
+        code,
+        startDate: state.startDate,
+        total: totals.total ?? 0,
       })
     }
 

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { sendWaitlistConfirmationEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -13,11 +14,14 @@ export async function POST(request: Request) {
       )
     }
 
-    // Si Supabase está disponible, intentamos guardar en la tabla lista_espera
+    const cleanEmail = email.trim().toLowerCase()
+    let persisted = false
+
+    // Si Supabase está disponible, guardamos en la tabla lista_espera
     if (isSupabaseConfigured && supabase) {
       const { error } = await supabase.from('lista_espera').insert([
         {
-          email: email.trim().toLowerCase(),
+          email: cleanEmail,
           target_date: targetDate || null,
           notes: experienceOrPackage
             ? `Interés en: ${experienceOrPackage}${notes ? ` - ${notes}` : ''}`
@@ -32,14 +36,21 @@ export async function POST(request: Request) {
           error.message
         )
       } else {
-        return NextResponse.json({ success: true, persisted: true })
+        persisted = true
       }
     }
 
+    // Enviar correo de confirmación de registro al cliente desde el servidor
+    await sendWaitlistConfirmationEmail({
+      email: cleanEmail,
+      targetDate: targetDate || null,
+      experienceOrPackage,
+    })
+
     return NextResponse.json({
       success: true,
-      persisted: false,
-      message: 'Solicitud recibida correctamente.',
+      persisted,
+      message: 'Solicitud registrada y confirmación por correo procesada.',
     })
   } catch (err: unknown) {
     console.error('Error en /api/lista-espera:', err)
