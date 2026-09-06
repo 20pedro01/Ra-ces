@@ -24,11 +24,11 @@ export function SiteNav() {
     <>
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2" aria-label="ComuniTour, inicio">
+          <Link href="/" className="flex items-center gap-2" aria-label="Raíces, inicio">
             <span className="flex size-9 items-center justify-center rounded-full bg-leaf text-leaf-foreground">
               <Leaf className="size-5" aria-hidden="true" />
             </span>
-            <span className="font-serif text-xl font-semibold tracking-tight">ComuniTour</span>
+            <span className="font-serif text-xl font-semibold tracking-tight">Raíces</span>
           </Link>
 
           <nav aria-label="Principal" className="hidden md:block">

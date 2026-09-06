@@ -75,7 +75,7 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
       <label className="flex items-center justify-between gap-3 rounded-2xl bg-accent px-4 py-3 text-accent-foreground">
         <span className="flex flex-col">
           <span className="flex items-center gap-2 text-sm font-bold">
-            <Bus className="size-4" aria-hidden="true" /> Transporte ComuniTour
+            <Bus className="size-4" aria-hidden="true" /> Transporte Raíces
           </span>
           <span className="text-xs">Ida y vuelta desde tu hospedaje · +{formatMXN(pkg.transportPrice)} / persona</span>
         </span>

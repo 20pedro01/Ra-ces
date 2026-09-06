@@ -8,7 +8,7 @@ export function HeroChat() {
       <div className="flex flex-col gap-3">
         <GuideBubble>
           <p>
-            ¡Hola! Soy tu guía ComuniTour.
+            ¡Hola! Soy tu guía Raíces.
             <br />
             Estoy aquí para ayudarte a descubrir experiencias auténticas de Yucatán.
           </p>

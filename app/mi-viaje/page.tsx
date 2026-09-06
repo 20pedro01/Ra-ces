@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Itinerary } from '@/components/trip/itinerary'
 
 export const metadata: Metadata = {
-  title: 'Mi viaje · ComuniTour',
+  title: 'Mi viaje · Raíces',
   description: 'Tu itinerario de experiencias en Yucatán.',
 }
 

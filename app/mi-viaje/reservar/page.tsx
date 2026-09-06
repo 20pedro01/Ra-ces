@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { BookingFlow } from '@/components/trip/booking-flow'
 
 export const metadata: Metadata = {
-  title: 'Reservar · ComuniTour',
+  title: 'Reservar · Raíces',
 }
 
 export default function ReservarPage() {

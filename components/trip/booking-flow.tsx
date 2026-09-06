@@ -130,7 +130,7 @@ export function BookingFlow() {
             <Bus className="size-4 text-primary" aria-hidden="true" />
             {totals.transport > 0 ? (
               <span>
-                Transporte ComuniTour incluido
+                Transporte Raíces incluido
                 {state.transportEnabled && ` · ${formatMXN(TRANSPORT_PRICE_PER_PERSON)} por persona por día`}
               </span>
             ) : (
@@ -221,7 +221,7 @@ function Confirmation() {
       </div>
 
       <div className="flex max-w-lg flex-col gap-2">
-        <p className="text-lg leading-relaxed">Gracias por elegir ComuniTour.</p>
+        <p className="text-lg leading-relaxed">Gracias por elegir Raíces.</p>
         <p className="text-lg leading-relaxed text-muted-foreground">
           Ahora estás listo para vivir Yucatán de una manera diferente.
         </p>

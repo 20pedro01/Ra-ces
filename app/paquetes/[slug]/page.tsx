@@ -17,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const pkg = getPackageBySlug(slug)
-  return { title: pkg ? `${pkg.name} · ComuniTour` : 'Paquete · ComuniTour' }
+  return { title: pkg ? `${pkg.name} · Raíces` : 'Paquete · Raíces' }
 }
 
 export default async function PackageDetailPage({

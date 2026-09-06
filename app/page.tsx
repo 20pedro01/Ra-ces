@@ -26,7 +26,7 @@ export default function HomePage() {
               Viva Raíces
             </p>
             <h1 className="text-5xl font-semibold leading-none tracking-tight text-balance md:text-7xl">
-              ComuniTour
+              Raíces
             </h1>
             <p className="max-w-xl text-xl leading-snug text-pretty md:text-2xl">
               Vive Yucatán, no solo lo visites.
@@ -43,7 +43,7 @@ export default function HomePage() {
       <footer className="border-t border-border/60">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between md:px-6">
           <p className="font-serif text-base text-foreground">
-            ComuniTour · Personas + Comunidad + Cultura + Naturaleza + Gastronomía + Tradición
+            Raíces · Personas + Comunidad + Cultura + Naturaleza + Gastronomía + Tradición
           </p>
           <p>Prototipo MVP. Precios y disponibilidad simulados.</p>
         </div>

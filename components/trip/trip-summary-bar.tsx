@@ -58,7 +58,7 @@ export function TripSummaryBar({ showContinue = true }: { showContinue?: boolean
         <label className="flex items-center justify-between gap-3 rounded-2xl bg-accent px-3 py-2.5 text-accent-foreground">
           <span className="flex items-center gap-2 text-sm font-bold">
             <Bus className="size-4" aria-hidden="true" />
-            Transporte ComuniTour
+            Transporte Raíces
             <span className="font-normal">· {formatMXN(TRANSPORT_PRICE_PER_PERSON)} / persona / día</span>
           </span>
           <Switch

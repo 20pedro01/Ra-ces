@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { ExperienceBuilder } from '@/components/chat/experience-builder'
 
 export const metadata: Metadata = {
-  title: 'Armar mi experiencia · ComuniTour',
-  description: 'Conversa con tu guía ComuniTour y arma una experiencia auténtica en Yucatán.',
+  title: 'Armar mi experiencia · Raíces',
+  description: 'Conversa con tu guía Raíces y arma una experiencia auténtica en Yucatán.',
 }
 
 export default function ExplorarPage() {

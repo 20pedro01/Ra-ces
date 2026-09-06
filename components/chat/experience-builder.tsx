@@ -337,7 +337,7 @@ export function ExperienceBuilder() {
                       next()
                     }}
                     title="No, necesito transporte"
-                    description="Transporte ComuniTour desde tu hospedaje"
+                    description="Transporte Raíces desde tu hospedaje"
                   />
                 </div>
               )}

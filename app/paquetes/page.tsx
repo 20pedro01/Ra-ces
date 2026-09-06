@@ -7,7 +7,7 @@ import { PACKAGES } from '@/lib/data'
 import { formatMXN } from '@/lib/format'
 
 export const metadata: Metadata = {
-  title: 'Paquetes · ComuniTour',
+  title: 'Paquetes · Raíces',
   description: 'Rutas prediseñadas con comunidades de Yucatán. Ruta de las Abejas Meliponas y más.',
 }
 

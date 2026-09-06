@@ -20,7 +20,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const exp = getExperienceBySlug(slug)
-  return { title: exp ? `${exp.name} · ComuniTour` : 'Experiencia · ComuniTour' }
+  return { title: exp ? `${exp.name} · Raíces` : 'Experiencia · Raíces' }
 }
 
 export default async function ExperienceDetailPage({
