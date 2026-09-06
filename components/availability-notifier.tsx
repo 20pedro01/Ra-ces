@@ -8,19 +8,22 @@ interface AvailabilityNotifierProps {
   targetDate?: string | null
   experienceOrPackage?: string
   className?: string
+  allowCustomDate?: boolean
 }
 
 export function AvailabilityNotifier({
   targetDate,
   experienceOrPackage,
   className = '',
+  allowCustomDate = false,
 }: AvailabilityNotifierProps) {
   const [email, setEmail] = useState('')
+  const [customDate, setCustomDate] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const dateLabel = targetDate ? formatDate(targetDate) : 'estas fechas'
+  const effectiveDate = targetDate ? formatDate(targetDate) : (customDate || 'fechas futuras')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +41,7 @@ export function AvailabilityNotifier({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          targetDate,
+          targetDate: targetDate || customDate || null,
           experienceOrPackage,
         }),
       })
@@ -62,7 +65,7 @@ export function AvailabilityNotifier({
   }
 
   const whatsappMessage = encodeURIComponent(
-    `Hola Viva Raíces, me gustaría saber cuándo habrá disponibilidad de talleres para: ${dateLabel}${
+    `Hola Viva Raíces, me gustaría saber cuándo habrá disponibilidad de talleres para: ${effectiveDate}${
       experienceOrPackage ? ` (${experienceOrPackage})` : ''
     }.`
   )
@@ -78,17 +81,26 @@ export function AvailabilityNotifier({
         </div>
         <div className="flex-1">
           <h4 className="text-sm font-bold text-foreground">
-            ¿Planeas tu viaje con anticipación?
+            ¿Planeas tu viaje con mayor anticipación?
           </h4>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             Los maestros artesanos abren su agenda hasta con 6 meses de anticipación.
             Déjanos tu correo y te notificaremos en cuanto abramos cupos para{' '}
-            <strong className="text-foreground">{dateLabel}</strong>.
+            <strong className="text-foreground">{effectiveDate}</strong>.
           </p>
 
           {!sent ? (
-            <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2">
+            <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2.5">
               <div className="flex flex-col gap-2 sm:flex-row">
+                {(allowCustomDate || !targetDate) && (
+                  <input
+                    type="text"
+                    placeholder="Mes o fecha aprox. (ej. Nov 2027)"
+                    value={customDate}
+                    onChange={(e) => setCustomDate(e.target.value)}
+                    className="h-10 rounded-xl border border-border bg-background px-3 text-xs font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-1/2"
+                  />
+                )}
                 <div className="relative flex-1">
                   <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                   <input
@@ -106,7 +118,7 @@ export function AvailabilityNotifier({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-70"
+                  className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-70"
                 >
                   {loading ? (
                     <>

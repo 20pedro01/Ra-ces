@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { AlertCircle, ArrowRight, Bus, Clock, Minus, Plus } from 'lucide-react'
+import { AlertCircle, ArrowRight, Bell, Bus, Clock, Minus, Plus } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { AvailabilityNotifier } from '@/components/availability-notifier'
 import type { TourPackage } from '@/lib/data'
@@ -10,6 +10,7 @@ import { addDays, formatMXN } from '@/lib/format'
 import {
   getTodayIso,
   getMaxFutureDateIso,
+  getMaxFutureMonthLabel,
   validateSingleDate,
   isLastMinuteBooking,
   MAX_BOOKING_MONTHS_AHEAD,
@@ -23,6 +24,7 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
   const [date, setDate] = useState(state.startDate ?? addDays(getTodayIso(), 14))
   const [dateError, setDateError] = useState<string | null>(null)
   const [futureIssue, setFutureIssue] = useState(false)
+  const [showFutureWaitlist, setShowFutureWaitlist] = useState(false)
 
   const people = state.people
   const subtotal = pkg.price * people
@@ -93,13 +95,35 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
       {futureIssue && (
         <AvailabilityNotifier
           targetDate={date}
+          allowCustomDate
           experienceOrPackage={`Paquete: ${pkg.name}`}
         />
       )}
 
-      <p className="-mt-2 text-xs text-muted-foreground">
-        Disponibilidad abierta para los próximos {MAX_BOOKING_MONTHS_AHEAD} meses.
-      </p>
+      <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-muted/30 p-3 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-muted-foreground">
+            📅 Calendario hasta <strong className="text-foreground">{getMaxFutureMonthLabel()}</strong>.
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowFutureWaitlist(!showFutureWaitlist)}
+            className="inline-flex items-center gap-1 font-bold text-primary hover:underline"
+          >
+            <Bell className="size-3.5" />
+            {showFutureWaitlist ? 'Ocultar' : '¿Viajas después? Avísame'}
+          </button>
+        </div>
+
+        {showFutureWaitlist && (
+          <AvailabilityNotifier
+            targetDate={null}
+            allowCustomDate
+            experienceOrPackage={`Paquete: ${pkg.name}`}
+            className="mt-1"
+          />
+        )}
+      </div>
 
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm font-bold">Personas</span>

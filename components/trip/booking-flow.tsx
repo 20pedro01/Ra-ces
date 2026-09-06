@@ -6,6 +6,7 @@ import Link from 'next/link'
 import {
   AlertCircle,
   ArrowLeft,
+  Bell,
   Bus,
   Calendar,
   Check,
@@ -25,6 +26,7 @@ import { addDays, formatDate, formatDateShort, formatHour, formatMXN } from '@/l
 import {
   getTodayIso,
   getMaxFutureDateIso,
+  getMaxFutureMonthLabel,
   validateDates,
   isLastMinuteBooking,
   MAX_BOOKING_MONTHS_AHEAD,
@@ -42,6 +44,7 @@ export function BookingFlow() {
   const [endDateInput, setEndDateInput] = useState(state.endDate ?? state.startDate ?? '')
   const [dateInlineError, setDateInlineError] = useState<string | null>(null)
   const [dateIsFutureIssue, setDateIsFutureIssue] = useState(false)
+  const [showFutureWaitlist, setShowFutureWaitlist] = useState(false)
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
   const empty = state.items.length === 0 && !pkg
 
@@ -203,10 +206,36 @@ export function BookingFlow() {
                   {dateIsFutureIssue && (
                     <AvailabilityNotifier
                       targetDate={startDateInput}
+                      allowCustomDate
                       experienceOrPackage="Mi Viaje"
                       className="mt-1"
                     />
                   )}
+
+                  <div className="flex flex-col gap-1.5 rounded-xl border border-border/60 bg-background/80 p-2.5 text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-1.5">
+                      <span className="text-[11px] text-muted-foreground">
+                        Disponibilidad hasta <strong className="text-foreground">{getMaxFutureMonthLabel()}</strong>.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowFutureWaitlist(!showFutureWaitlist)}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+                      >
+                        <Bell className="size-3" />
+                        {showFutureWaitlist ? 'Ocultar' : '¿Viajas después? Avísame'}
+                      </button>
+                    </div>
+
+                    {showFutureWaitlist && (
+                      <AvailabilityNotifier
+                        targetDate={null}
+                        allowCustomDate
+                        experienceOrPackage="Mi Viaje"
+                        className="mt-1"
+                      />
+                    )}
+                  </div>
 
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-[11px] text-muted-foreground">

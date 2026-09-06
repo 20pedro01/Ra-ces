@@ -28,6 +28,16 @@ export function getMaxFutureDateIso(monthsAhead = MAX_BOOKING_MONTHS_AHEAD): str
   return `${year}-${month}-${day}`
 }
 
+/**
+ * Devuelve una etiqueta amigable del mes máximo disponible (ej: "marzo de 2027").
+ */
+export function getMaxFutureMonthLabel(monthsAhead = MAX_BOOKING_MONTHS_AHEAD): string {
+  const maxIso = getMaxFutureDateIso(monthsAhead)
+  const date = new Date(`${maxIso}T12:00:00`)
+  const label = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' }).format(date)
+  return label.charAt(0).toUpperCase() + label.slice(1)
+}
+
 export interface DateValidationResult {
   isValid: boolean
   error: string | null

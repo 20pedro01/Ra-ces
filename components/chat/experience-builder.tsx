@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {
   AlertCircle,
   ArrowRight,
+  Bell,
   Bus,
   Car,
   Clock,
@@ -24,6 +25,7 @@ import { addDays, formatDate, formatDateShort } from '@/lib/format'
 import {
   getTodayIso,
   getMaxFutureDateIso,
+  getMaxFutureMonthLabel,
   validateDates,
   isLastMinuteBooking,
   MAX_BOOKING_MONTHS_AHEAD,
@@ -56,6 +58,7 @@ export function ExperienceBuilder() {
   const [endDate, setEndDate] = useState(state.endDate ?? addDays(getTodayIso(), 17))
   const [dateError, setDateError] = useState<string | null>(null)
   const [futureIssue, setFutureIssue] = useState(false)
+  const [showFutureWaitlist, setShowFutureWaitlist] = useState(false)
   const [zone, setZone] = useState<Zone | null>(state.zone)
   const [lodging, setLodging] = useState(state.lodging)
   const [categories, setCategories] = useState<CategoryId[]>(state.categories)
@@ -241,13 +244,35 @@ export function ExperienceBuilder() {
                   {futureIssue && (
                     <AvailabilityNotifier
                       targetDate={startDate}
+                      allowCustomDate
                       experienceOrPackage="Itinerario general"
                     />
                   )}
 
-                  <p className="text-xs text-muted-foreground">
-                    * Reservaciones de talleres disponibles hasta con {MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para coordinar la disponibilidad con los artesanos locales.
-                  </p>
+                  <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-muted/30 p-3 text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-muted-foreground">
+                        📅 Calendario abierto hasta <strong className="text-foreground">{getMaxFutureMonthLabel()}</strong>.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowFutureWaitlist(!showFutureWaitlist)}
+                        className="inline-flex items-center gap-1 font-bold text-primary hover:underline"
+                      >
+                        <Bell className="size-3.5" />
+                        {showFutureWaitlist ? 'Cerrar aviso' : '¿Viajas después? Avísame por correo'}
+                      </button>
+                    </div>
+
+                    {showFutureWaitlist && (
+                      <AvailabilityNotifier
+                        targetDate={null}
+                        allowCustomDate
+                        experienceOrPackage="Itinerario personalizado"
+                        className="mt-1"
+                      />
+                    )}
+                  </div>
 
                   <NextButton
                     onClick={() => {
