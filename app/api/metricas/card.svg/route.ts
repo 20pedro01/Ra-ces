@@ -120,15 +120,15 @@ export async function GET() {
 
   <!-- Fuente de Datos y Última Sincronización (Centrado al fondo) -->
   <g transform="translate(190, 388)" filter="url(#softShadow)">
-    <rect width="440" height="50" rx="14" fill="#ffffff" stroke="#e6e0d8" stroke-width="1"/>
+    <rect width="440" height="52" rx="14" fill="#ffffff" stroke="#e6e0d8" stroke-width="1"/>
     
-    <!-- Icono Globo / API -->
-    <circle cx="22" cy="25" r="9" fill="#faf5ee" stroke="#ebd9c8" stroke-width="1"/>
-    <circle cx="22" cy="25" r="4.5" fill="none" stroke="#6c4629" stroke-width="1.2"/>
-    <line x1="13" y1="25" x2="31" y2="25" stroke="#6c4629" stroke-width="1.2"/>
+    <!-- Icono Globo / API centrado con el título -->
+    <circle cx="126" cy="20" r="9" fill="#faf5ee" stroke="#ebd9c8" stroke-width="1"/>
+    <circle cx="126" cy="20" r="4.5" fill="none" stroke="#6c4629" stroke-width="1.2"/>
+    <line x1="117" y1="20" x2="135" y2="20" stroke="#6c4629" stroke-width="1.2"/>
     
-    <text x="40" y="22" fill="#3e2719" font-size="12" font-weight="700" class="text-font">Fuente de datos (API endpoint)</text>
-    <text x="40" y="38" fill="#6b635b" font-size="10.5" font-weight="500" class="text-font">Última sincronización: ${fechaTexto}</text>
+    <text x="143" y="24" fill="#3e2719" font-size="12" font-weight="700" class="text-font">Fuente de datos (API endpoint)</text>
+    <text x="220" y="40" fill="#6b635b" font-size="10.5" font-weight="500" class="text-font" text-anchor="middle">Última sincronización: ${fechaTexto}</text>
   </g>
 
 </svg>`

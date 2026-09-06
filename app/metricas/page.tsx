@@ -151,7 +151,7 @@ export default function MetricasPage() {
         </section>
 
         {/* Fuente de Datos y Última Sincronización (Centrado) */}
-        <section className="bg-white border border-[#e6e0d8] rounded-xl py-3 px-5 sm:py-4 sm:px-6 shadow-xs flex flex-col items-center justify-center gap-1.5 text-center w-full max-w-[480px] mx-auto">
+        <section className="bg-white border border-[#e6e0d8] rounded-xl py-3 px-5 sm:py-4 sm:px-6 shadow-xs flex flex-col items-center justify-center gap-1.5 text-center w-full max-w-[440px] mx-auto">
           <div className="flex items-center justify-center gap-2 text-[#3e2719]">
             <Globe className="w-4 h-4 text-[#6c4629]" />
             <h3 className="text-xs sm:text-sm font-bold">
