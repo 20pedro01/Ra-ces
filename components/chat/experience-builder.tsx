@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
+  AlertCircle,
   ArrowRight,
   Bus,
   Car,
@@ -18,6 +19,12 @@ import { ExperienceCard } from '@/components/experience-card'
 import { TripSummaryBar } from '@/components/trip/trip-summary-bar'
 import { BUDGETS, CATEGORIES, ZONES, type BudgetId, type CategoryId, type Zone } from '@/lib/data'
 import { addDays, formatDate, formatDateShort } from '@/lib/format'
+import {
+  getTodayIso,
+  getMaxFutureDateIso,
+  validateDates,
+  MAX_BOOKING_MONTHS_AHEAD,
+} from '@/lib/date-validation'
 import { recommend } from '@/lib/recommend'
 import { useTrip } from '@/lib/trip-store'
 import { cn } from '@/lib/utils'
@@ -35,10 +42,6 @@ const QUESTIONS: Record<Exclude<Step, 'results'>, string> = {
   transport: '¿Cuentas con transporte?',
 }
 
-function todayIso() {
-  return new Date().toISOString().slice(0, 10)
-}
-
 export function ExperienceBuilder() {
   const { state, dispatch } = useTrip()
   const hasAnswers = state.startDate && state.budget && state.needsTransport !== null
@@ -46,8 +49,9 @@ export function ExperienceBuilder() {
   const [typing, setTyping] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const [startDate, setStartDate] = useState(state.startDate ?? addDays(todayIso(), 14))
-  const [endDate, setEndDate] = useState(state.endDate ?? addDays(todayIso(), 17))
+  const [startDate, setStartDate] = useState(state.startDate ?? addDays(getTodayIso(), 14))
+  const [endDate, setEndDate] = useState(state.endDate ?? addDays(getTodayIso(), 17))
+  const [dateError, setDateError] = useState<string | null>(null)
   const [zone, setZone] = useState<Zone | null>(state.zone)
   const [lodging, setLodging] = useState(state.lodging)
   const [categories, setCategories] = useState<CategoryId[]>(state.categories)
@@ -177,10 +181,13 @@ export function ExperienceBuilder() {
                       <input
                         type="date"
                         value={startDate}
-                        min={todayIso()}
+                        min={getTodayIso()}
+                        max={getMaxFutureDateIso()}
                         onChange={(e) => {
-                          setStartDate(e.target.value)
-                          if (e.target.value > endDate) setEndDate(e.target.value)
+                          const val = e.target.value
+                          setStartDate(val)
+                          if (dateError) setDateError(null)
+                          if (val && endDate && val > endDate) setEndDate(val)
                         }}
                         className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
                       />
@@ -190,14 +197,39 @@ export function ExperienceBuilder() {
                       <input
                         type="date"
                         value={endDate}
-                        min={startDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        min={startDate || getTodayIso()}
+                        max={getMaxFutureDateIso()}
+                        onChange={(e) => {
+                          setEndDate(e.target.value)
+                          if (dateError) setDateError(null)
+                        }}
                         className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
                       />
                     </label>
                   </div>
+
+                  {dateError && (
+                    <div
+                      role="alert"
+                      className="flex items-start gap-2.5 rounded-2xl border border-destructive/30 bg-destructive/10 p-3.5 text-sm font-medium text-destructive"
+                    >
+                      <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                      <span>{dateError}</span>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-muted-foreground">
+                    * Reservaciones de talleres disponibles hasta con {MAX_BOOKING_MONTHS_AHEAD} meses de anticipación para coordinar la disponibilidad con los artesanos locales.
+                  </p>
+
                   <NextButton
                     onClick={() => {
+                      const validation = validateDates(startDate, endDate)
+                      if (!validation.isValid) {
+                        setDateError(validation.error)
+                        return
+                      }
+                      setDateError(null)
                       dispatch({ type: 'setDates', startDate, endDate })
                       next()
                     }}

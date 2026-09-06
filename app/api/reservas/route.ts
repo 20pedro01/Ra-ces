@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, isSupabaseConfigured, type ReservacionPayload } from '@/lib/supabase'
+import { validateDates } from '@/lib/date-validation'
 
 function generateReservationCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -20,6 +21,13 @@ export async function POST(request: Request) {
         { error: 'Faltan datos de la reservación (state o totals)' },
         { status: 400 }
       )
+    }
+
+    if (state.startDate) {
+      const dateVal = validateDates(state.startDate, state.endDate || state.startDate)
+      if (!dateVal.isValid) {
+        return NextResponse.json({ error: dateVal.error }, { status: 400 })
+      }
     }
 
     const code = generateReservationCode()

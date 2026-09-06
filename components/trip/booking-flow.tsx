@@ -3,10 +3,28 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, Bus, Calendar, Check, Leaf, Loader2, Package, Truck, Users } from 'lucide-react'
+import {
+  AlertCircle,
+  ArrowLeft,
+  Bus,
+  Calendar,
+  Check,
+  Leaf,
+  Loader2,
+  Package,
+  Pencil,
+  Truck,
+  Users,
+} from 'lucide-react'
 import { GuideBubble } from '@/components/chat/chat-bubble'
 import { EXPERIENCE_MAP, PACKAGES, TRANSPORT_PRICE_PER_PERSON } from '@/lib/data'
 import { addDays, formatDate, formatDateShort, formatHour, formatMXN } from '@/lib/format'
+import {
+  getTodayIso,
+  getMaxFutureDateIso,
+  validateDates,
+  MAX_BOOKING_MONTHS_AHEAD,
+} from '@/lib/date-validation'
 import { useTrip } from '@/lib/trip-store'
 
 export function BookingFlow() {
@@ -14,6 +32,11 @@ export function BookingFlow() {
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [contact, setContact] = useState({ name: '', email: '', phone: '' })
+
+  const [editingDates, setEditingDates] = useState(!state.startDate)
+  const [startDateInput, setStartDateInput] = useState(state.startDate ?? '')
+  const [endDateInput, setEndDateInput] = useState(state.endDate ?? state.startDate ?? '')
+  const [dateInlineError, setDateInlineError] = useState<string | null>(null)
   const pkg = PACKAGES.find((p) => p.id === state.packageId)
   const empty = state.items.length === 0 && !pkg
 
@@ -38,6 +61,19 @@ export function BookingFlow() {
   }
 
   const confirm = async () => {
+    if (!state.startDate) {
+      setErrorMsg('Por favor define las fechas de tu visita antes de confirmar la reservación.')
+      setEditingDates(true)
+      return
+    }
+
+    const dateValidation = validateDates(state.startDate, state.endDate || state.startDate)
+    if (!dateValidation.isValid) {
+      setErrorMsg(dateValidation.error)
+      setEditingDates(true)
+      return
+    }
+
     setSubmitting(true)
     setErrorMsg(null)
     try {
@@ -91,12 +127,94 @@ export function BookingFlow() {
         <dl className="grid gap-4 sm:grid-cols-2">
           <div className="flex items-start gap-3">
             <Calendar className="mt-0.5 size-5 text-primary" aria-hidden="true" />
-            <div>
-              <dt className="text-sm font-bold text-muted-foreground">Fecha</dt>
-              <dd className="font-semibold">
-                {state.startDate ? formatDate(state.startDate) : 'Por confirmar'}
-                {state.endDate && state.endDate !== state.startDate && ` – ${formatDate(state.endDate)}`}
-              </dd>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <dt className="text-sm font-bold text-muted-foreground">Fechas</dt>
+                <button
+                  type="button"
+                  onClick={() => setEditingDates(!editingDates)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                >
+                  <Pencil className="size-3" />
+                  {editingDates ? 'Cerrar' : state.startDate ? 'Cambiar' : 'Definir fechas'}
+                </button>
+              </div>
+
+              {!editingDates ? (
+                <dd className="font-semibold">
+                  {state.startDate ? formatDate(state.startDate) : (
+                    <span className="font-medium text-amber-600">Por definir (requerido)</span>
+                  )}
+                  {state.endDate && state.endDate !== state.startDate && ` – ${formatDate(state.endDate)}`}
+                </dd>
+              ) : (
+                <div className="mt-2 flex flex-col gap-2 rounded-2xl bg-muted/60 p-3">
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1 text-xs font-semibold">
+                      Llegada
+                      <input
+                        type="date"
+                        value={startDateInput}
+                        min={getTodayIso()}
+                        max={getMaxFutureDateIso()}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          setStartDateInput(val)
+                          if (dateInlineError) setDateInlineError(null)
+                          if (val && endDateInput && val > endDateInput) setEndDateInput(val)
+                        }}
+                        className="h-9 rounded-lg border border-input bg-background px-2.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1 text-xs font-semibold">
+                      Salida
+                      <input
+                        type="date"
+                        value={endDateInput}
+                        min={startDateInput || getTodayIso()}
+                        max={getMaxFutureDateIso()}
+                        onChange={(e) => {
+                          setEndDateInput(e.target.value)
+                          if (dateInlineError) setDateInlineError(null)
+                        }}
+                        className="h-9 rounded-lg border border-input bg-background px-2.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      />
+                    </label>
+                  </div>
+                  {dateInlineError && (
+                    <p className="flex items-start gap-1 text-xs font-semibold text-destructive">
+                      <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+                      <span>{dateInlineError}</span>
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[11px] text-muted-foreground">
+                      Máx. {MAX_BOOKING_MONTHS_AHEAD} meses a futuro
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const val = validateDates(startDateInput, endDateInput)
+                        if (!val.isValid) {
+                          setDateInlineError(val.error)
+                          return
+                        }
+                        setDateInlineError(null)
+                        setErrorMsg(null)
+                        dispatch({
+                          type: 'setDates',
+                          startDate: startDateInput,
+                          endDate: endDateInput,
+                        })
+                        setEditingDates(false)
+                      }}
+                      className="rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90"
+                    >
+                      Guardar fechas
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex items-start gap-3">

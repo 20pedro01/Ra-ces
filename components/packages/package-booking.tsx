@@ -2,23 +2,36 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Bus, Minus, Plus } from 'lucide-react'
+import { AlertCircle, ArrowRight, Bus, Minus, Plus } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import type { TourPackage } from '@/lib/data'
 import { addDays, formatMXN } from '@/lib/format'
+import {
+  getTodayIso,
+  getMaxFutureDateIso,
+  validateSingleDate,
+  MAX_BOOKING_MONTHS_AHEAD,
+} from '@/lib/date-validation'
 import { useTrip } from '@/lib/trip-store'
 
 export function PackageBooking({ pkg }: { pkg: TourPackage }) {
   const { state, dispatch } = useTrip()
   const router = useRouter()
   const [transport, setTransport] = useState(state.packageId === pkg.id ? state.packageTransport : false)
-  const [date, setDate] = useState(state.startDate ?? addDays(new Date().toISOString().slice(0, 10), 14))
+  const [date, setDate] = useState(state.startDate ?? addDays(getTodayIso(), 14))
+  const [dateError, setDateError] = useState<string | null>(null)
 
   const people = state.people
   const subtotal = pkg.price * people
   const transportTotal = transport ? pkg.transportPrice * people : 0
 
   const reserve = () => {
+    const validation = validateSingleDate(date)
+    if (!validation.isValid) {
+      setDateError(validation.error)
+      return
+    }
+    setDateError(null)
     dispatch({ type: 'setDates', startDate: date, endDate: date })
     dispatch({ type: 'selectPackage', packageId: pkg.id, transport })
     router.push('/mi-viaje/reservar')
@@ -39,11 +52,29 @@ export function PackageBooking({ pkg }: { pkg: TourPackage }) {
         <input
           type="date"
           value={date}
-          min={new Date().toISOString().slice(0, 10)}
-          onChange={(e) => setDate(e.target.value)}
+          min={getTodayIso()}
+          max={getMaxFutureDateIso()}
+          onChange={(e) => {
+            setDate(e.target.value)
+            if (dateError) setDateError(null)
+          }}
           className="h-12 rounded-xl border border-input bg-background px-3 text-base font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
         />
       </label>
+
+      {dateError && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-semibold text-destructive"
+        >
+          <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <span>{dateError}</span>
+        </div>
+      )}
+
+      <p className="-mt-2 text-xs text-muted-foreground">
+        Disponibilidad abierta para los próximos {MAX_BOOKING_MONTHS_AHEAD} meses.
+      </p>
 
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm font-bold">Personas</span>
