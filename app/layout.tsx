@@ -14,7 +14,7 @@ const nunito = Nunito({ subsets: ['latin'], variable: '--font-nunito' })
 export const metadata: Metadata = {
   title: 'Raíces · Vive Yucatán, no solo lo visites',
   description:
-    'Viva Raíces: tu guía digital conversacional para vivir experiencias auténticas en Yucatán con comunidades, artesanos y productores locales.',
+    'Raíces: tu guía digital conversacional para vivir experiencias auténticas en Yucatán con comunidades, artesanos y productores locales.',
   generator: 'v0.app',
   icons: {
     icon: [

@@ -80,7 +80,7 @@ export default function MetricasEmbedPage() {
           <TrendingUp className="w-3 h-3 text-amber-400" />
           <span>Conversión: <strong className="text-amber-400 font-bold">{data?.tasa_conversion ?? "0%"}</strong></span>
         </div>
-        <span className="text-[10px] text-neutral-500">Viva Raíces</span>
+        <span className="text-[10px] text-neutral-500">Raíces</span>
       </div>
     </div>
   );

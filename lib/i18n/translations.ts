@@ -10,7 +10,7 @@ export const TRANSLATIONS = {
     'nav.language': 'Idioma',
 
     // Home
-    'home.tagline': 'Viva Raíces',
+    'home.tagline': 'Raíces',
     'home.title': 'Raíces',
     'home.subtitle': 'Vive Yucatán, no solo lo visites.',
     'home.hero.start': 'Empezar a planear',
